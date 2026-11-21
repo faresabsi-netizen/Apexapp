@@ -1,0 +1,2187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apex World</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: 'Segoe UI', -apple-system, Helvetica, Arial, sans-serif; font-weight: 600; background: #0f1520; color: #cfd6e2; padding-bottom: 96px; line-height: 1.9; min-height: 100vh; }
+  header { padding: 20px 26px; background: #0a0f18; border-bottom: 1px solid #243044; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 5; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 26px; height: 26px; }
+  .logo i { display: block; }
+  .logo i:nth-child(1) { background: #d4a64a; } .logo i:nth-child(2) { background: #5b7aa8; } .logo i:nth-child(3) { background: #3f5a85; } .logo i:nth-child(4) { background: #2a3f63; }
+  header h1 { margin: 0; font-size: 18px; font-weight: 800; color: #eef1f6; letter-spacing: 2px; text-transform: uppercase; }
+  header select { background: #172033; color: #cfd6e2; border: 1px solid #2f3d56; border-radius: 6px; padding: 10px 14px; font-size: 13px; font-weight: 700; }
+  .screen { display: none; padding: 48px 26px; max-width: 780px; margin: 0 auto; }
+  .screen.active { display: block; animation: fade 0.3s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  h2 { margin: 0 0 14px 0; font-size: 32px; font-weight: 800; color: #eef1f6; letter-spacing: 0.5px; }
+  .sub { color: #8a97ad; font-size: 15px; margin: 0 0 44px 0; font-weight: 600; }
+  .card { background: #172033; border: 1px solid #243044; border-radius: 12px; padding: 38px; margin-bottom: 40px; }
+  .card h3 { margin: 0 0 28px 0; font-size: 13px; letter-spacing: 3px; color: #d4a64a; text-transform: uppercase; font-weight: 800; }
+  .muted { color: #8a97ad; font-size: 14px; font-weight: 600; }
+  .hero { padding: 44px 36px; margin-bottom: 40px; background: linear-gradient(135deg, #1d2a44, #141c2e); border: 1px solid #2f3d56; border-radius: 12px; color: #eef1f6; }
+  .hero .label { font-size: 13px; opacity: 0.8; letter-spacing: 2px; font-weight: 700; text-transform: uppercase; }
+  .hero .time { font-size: 50px; font-weight: 300; letter-spacing: 3px; margin-top: 10px; }
+  .hero .muted { color: rgba(238, 241, 246, 0.7); }
+  .streakCard { background: linear-gradient(135deg, #2b2210, #1a1508); border: 2px solid #d4a64a; border-radius: 14px; padding: 40px 36px; margin-bottom: 40px; box-shadow: 0 0 40px rgba(212, 166, 74, 0.25); text-align: center; }
+  .streakCard.pop { animation: pop 0.7s ease; }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.06); box-shadow: 0 0 70px rgba(212, 166, 74, 0.6); } 100% { transform: scale(1); } }
+  .streakCard .hello { font-size: 20px; font-weight: 800; color: #eef1f6; margin-bottom: 6px; }
+  .streakCard .num { font-size: 84px; font-weight: 900; color: #f0c15a; line-height: 1.1; text-shadow: 0 0 24px rgba(240, 193, 90, 0.5); }
+  .streakCard .lbl { font-size: 13px; color: #d4a64a; letter-spacing: 4px; text-transform: uppercase; font-weight: 800; margin-bottom: 24px; }
+  .streakCard .days { display: flex; justify-content: center; gap: 12px; margin-bottom: 28px; }
+  .streakCard .days span { width: 18px; height: 18px; border-radius: 50%; background: #3a3118; }
+  .streakCard .days span.on { background: #f0c15a; box-shadow: 0 0 12px rgba(240, 193, 90, 0.8); }
+  .petRow { display: flex; align-items: center; justify-content: center; gap: 20px; }
+  .petBox { font-size: 60px; line-height: 1; }
+  .petInfo { text-align: left; }
+  .petInfo b { display: block; font-size: 18px; color: #eef1f6; font-weight: 800; }
+  .petInfo small { color: #b9a672; font-size: 13px; font-weight: 600; }
+  .quote { background: #172033; border-left: 4px solid #5b7aa8; border-radius: 0 12px 12px 0; padding: 30px 32px; margin-bottom: 40px; font-size: 15px; color: #b6c0d1; font-weight: 600; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .tile { background: #172033; border: 1px solid #243044; border-top: 4px solid #5b7aa8; border-radius: 12px; padding: 40px 28px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .tile:nth-child(3n+2) { border-top-color: #8e6fa8; }
+  .tile:nth-child(3n+3) { border-top-color: #3f8fa0; }
+  .tile:active, .tile:hover { background: #1d2940; }
+  .tile b { display: block; font-size: 18px; font-weight: 800; margin-bottom: 10px; color: #eef1f6; }
+  .tile small { color: #8a97ad; font-size: 13px; font-weight: 600; }
+  button.main { background: #d4a64a; color: #0f1520; border: none; border-radius: 8px; padding: 18px 34px; font-size: 14px; font-weight: 800; cursor: pointer; margin: 14px 18px 14px 0; letter-spacing: 1px; text-transform: uppercase; }
+  button.main:active { background: #b88f3d; }
+  button.alt { background: #1d2940; color: #cfd6e2; border: 1px solid #2f3d56; border-radius: 8px; padding: 15px 26px; font-size: 14px; font-weight: 700; cursor: pointer; margin: 10px 14px 10px 0; }
+  button.alt.on { background: #5b7aa8; border-color: #5b7aa8; color: #0f1520; font-weight: 800; }
+  input[type=text], input[type=time], input[type=number], input[type=url], textarea, select.field { background: #0f1520; color: #eef1f6; border: 1px solid #2f3d56; border-radius: 8px; padding: 18px 20px; font-size: 16px; font-weight: 600; width: 100%; margin: 12px 0 30px 0; font-family: inherit; }
+  input:focus, textarea:focus { outline: none; border-color: #d4a64a; }
+  input::placeholder, textarea::placeholder { color: #5d6b82; }
+  input[type=time] { width: auto; }
+  textarea { min-height: 120px; resize: vertical; }
+  label { display: block; font-size: 12px; letter-spacing: 2px; color: #8a97ad; text-transform: uppercase; margin-top: 16px; font-weight: 800; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  ul { list-style: none; padding: 0; margin: 28px 0 0 0; }
+  li { padding: 24px 0; border-bottom: 1px solid #243044; font-size: 15px; display: flex; justify-content: space-between; gap: 16px; font-weight: 600; }
+  li small { color: #8a97ad; display: block; margin-top: 8px; font-weight: 600; }
+  li button { background: none; border: none; color: #5d6b82; cursor: pointer; font-size: 18px; }
+  .stat { font-size: 48px; font-weight: 800; color: #d4a64a; }
+  .chart { display: flex; align-items: flex-end; gap: 14px; height: 150px; margin-top: 28px; }
+  .chart div { flex: 1; text-align: center; font-size: 11px; color: #8a97ad; font-weight: 700; }
+  .chart i { display: block; background: #5b7aa8; border-radius: 4px 4px 0 0; margin-bottom: 8px; min-height: 3px; }
+  .video { position: relative; padding-bottom: 56.25%; height: 0; margin-top: 28px; border-radius: 12px; overflow: hidden; background: #000; }
+  .video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+  .note { background: #0f1520; border: 1px solid #243044; border-left: 4px solid #d4a64a; border-radius: 8px; padding: 28px 30px; margin-top: 34px; font-size: 15px; color: #cfd6e2; font-weight: 600; }
+  .chip { display: inline-block; background: #1d2940; color: #cfd6e2; border: 1px solid #2f3d56; border-radius: 8px; padding: 14px 24px; margin: 10px 14px 10px 0; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .chip.on { background: #5b7aa8; color: #0f1520; border-color: #5b7aa8; font-weight: 800; }
+  .avatarView { width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 54px; margin: 0 auto 28px auto; border: 3px solid #d4a64a; }
+  .swatch { display: inline-block; width: 46px; height: 46px; border-radius: 50%; margin: 10px 14px 10px 0; cursor: pointer; border: 3px solid transparent; }
+  .swatch.on { border-color: #d4a64a; }
+  nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0a0f18; border-top: 1px solid #243044; display: flex; overflow-x: auto; padding: 4px 10px; }
+  nav button { flex: 1 0 auto; background: none; border: none; border-bottom: 3px solid transparent; color: #7c8aa1; font-size: 14px; font-weight: 800; padding: 22px 22px 18px 22px; cursor: pointer; }
+  nav button.on { color: #d4a64a; border-bottom-color: #d4a64a; }
+  #setup { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0f1520; z-index: 10; padding: 70px 30px; overflow-y: auto; }
+  #setup .box { background: #172033; border: 1px solid #243044; border-radius: 14px; max-width: 460px; margin: 0 auto; padding: 48px 38px; text-align: center; }
+  #setup .logo { width: 48px; height: 48px; margin: 0 auto 26px auto; gap: 4px; }
+  #setup h1 { font-size: 30px; font-weight: 800; margin: 0 0 10px 0; color: #eef1f6; letter-spacing: 2px; text-transform: uppercase; }
+  #setup p { color: #8a97ad; margin: 0 0 34px 0; }
+  #setup input { text-align: center; }
+  .step { display: none; }
+  .step.on { display: block; }
+  .dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 34px; }
+  .dots span { width: 12px; height: 12px; border-radius: 50%; background: #2f3d56; }
+  .dots span.on { background: #d4a64a; }
+</style>
+</head>
+<body>
+
+<div id="setup">
+  <div class="box">
+    <div class="logo"><i></i><i></i><i></i><i></i></div>
+    <h1>Apex World</h1>
+    <div class="dots"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+
+    <div class="step on" id="st1">
+      <p>Welcome. First, what is your name?</p>
+      <input type="text" id="sName" placeholder="Your name">
+      <button class="main" onclick="nextStep(2)" style="width:100%;margin:0">Next</button>
+    </div>
+
+    <div class="step" id="st2">
+      <p>How old are you?</p>
+      <input type="number" id="sAge" placeholder="Your age">
+      <button class="main" onclick="nextStep(3)" style="width:100%;margin:0">Next</button>
+    </div>
+
+    <div class="step" id="st3">
+      <p>Build your avatar. Tap to choose.</p>
+      <div class="avatarView" id="avPreview">:)</div>
+      <label>Colour</label>
+      <div id="avColors"></div>
+      <label>Face</label>
+      <div id="avFaces"></div>
+      <button class="main" onclick="nextStep(4)" style="width:100%;margin:20px 0 0 0">Next</button>
+    </div>
+
+    <div class="step" id="st4">
+      <p>Pick your pet. It grows with your streak.</p>
+      <div id="petChoices"></div>
+      <label>Name your pet</label>
+      <input type="text" id="sPetName" placeholder="Pet name">
+      <button class="main" onclick="nextStep(5)" style="width:100%;margin:0">Next</button>
+    </div>
+
+    <div class="step" id="st5">
+      <p>Optional: one big goal for this year. You can skip this.</p>
+      <input type="text" id="sYearGoal" placeholder="Write your goal">
+      <button class="main" onclick="finishSetup()" style="width:100%;margin:0">Start</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="brand">
+    <div class="logo"><i></i><i></i><i></i><i></i></div>
+    <h1>Apex World</h1>
+  </div>
+  <select id="lang" onchange="setLang(this.value)">
+    <option value="en">English</option>
+    <option value="ar">العربية</option>
+    <option value="fr">Français</option>
+    <option value="es">Español</option>
+  </select>
+</header>
+<div id="home" class="screen active">
+  <div class="streakCard" id="streakCard">
+    <div class="hello" id="hello">Welcome back</div>
+    <div class="num" id="streakNum">0</div>
+    <div class="lbl">day streak</div>
+    <div class="days" id="streakDays"></div>
+    <div class="petRow">
+      <div class="petBox" id="petBox"></div>
+      <div class="petInfo"><b id="petName">Pet</b><small id="petMood">Ready to grow</small></div>
+    </div>
+    <button class="main" onclick="checkIn()" id="checkInBtn" style="margin-top:28px">Check in today</button>
+  </div>
+
+  <div class="card">
+    <h3>Milestones</h3>
+    <div id="milestones"></div>
+    <div class="note" id="nextMilestone"></div>
+  </div>
+
+  <div class="card">
+    <h3>Daily challenge</h3>
+    <div class="note" id="challengeText" style="margin-top:0"></div>
+    <button class="main" onclick="doChallenge()" id="challengeBtn">Mark as done</button>
+  </div>
+
+  <div class="hero">
+    <div class="label" id="greet">Welcome</div>
+    <div class="time" id="clock">--:--</div>
+    <div class="muted" id="countdown" style="margin-top:8px"></div>
+    <button class="alt" onclick="welcome()" style="margin-top:24px" id="welcomeBtn">Hear your coach</button>
+  </div>
+
+  <div class="quote" id="quoteBox"></div>
+
+  <div class="grid">
+    <div class="tile" onclick="show('calendar')"><b>Calendar</b><small>See your days</small></div>
+    <div class="tile" onclick="show('profile')"><b>Profile</b><small>Your avatar</small></div>
+    <div class="tile" onclick="show('goals')"><b>Goals</b><small>Write what you want</small></div>
+    <div class="tile" onclick="show('careers')"><b>Careers</b><small>Tap a job, watch</small></div>
+    <div class="tile" onclick="show('videos')"><b>Sport Videos</b><small>Tap a sport, watch</small></div>
+    <div class="tile" onclick="show('training')"><b>Training</b><small>Tap and log</small></div>
+    <div class="tile" onclick="show('nutrition')"><b>Nutrition</b><small>Tap your meals</small></div>
+    <div class="tile" onclick="show('sleep')"><b>Sleep</b><small>Tap your hours</small></div>
+    <div class="tile" onclick="show('skills')"><b>Skills</b><small>Tap and watch</small></div>
+    <div class="tile" onclick="show('money')"><b>Money</b><small>Tap and save</small></div>
+    <div class="tile" onclick="show('explore')"><b>Explore</b><small>Tap a city</small></div>
+    <div class="tile" onclick="show('news')"><b>News</b><small>Tap a topic</small></div>
+    <div class="tile" onclick="show('review')"><b>Daily Review</b><small>Reflect on your day</small></div>
+    <div class="tile" onclick="show('notes')"><b>Notes</b><small>Save anything</small></div>
+    <div class="tile" onclick="show('match')"><b>Focus and Timers</b><small>Pick your ringtone</small></div>
+  </div>
+</div>
+
+<div id="calendar" class="screen">
+  <h2>Calendar</h2>
+  <p class="sub">Gold days are the days you checked in. Tap a day to add a note.</p>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <button class="alt" onclick="changeMonth(-1)" style="margin:0">Back</button>
+      <h3 id="monthTitle" style="margin:0">Month</h3>
+      <button class="alt" onclick="changeMonth(1)" style="margin:0">Next</button>
+    </div>
+    <div id="calGrid" style="margin-top:32px"></div>
+    <div class="note" id="dayNote">Tap a day to see or add a note.</div>
+    <input type="text" id="dayInput" placeholder="Write a note for this day" style="margin-top:20px">
+    <button class="main" onclick="saveDayNote()">Save day note</button>
+  </div>
+</div>
+
+<div id="profile" class="screen">
+  <h2>Profile</h2>
+  <p class="sub">Change your avatar or tell the app more about you.</p>
+  <div class="card">
+    <div class="avatarView" id="profAvatar">:)</div>
+    <label>Avatar colour</label>
+    <div id="profColors"></div>
+    <label>Avatar face</label>
+    <div id="profFaces"></div>
+    <label>Full name</label>
+    <input type="text" id="pName" placeholder="Your name">
+    <div class="row">
+      <div><label>Age</label><input type="number" id="pAge" placeholder="Age"></div>
+      <div><label>Country</label><input type="text" id="pCountry" placeholder="Where you live"></div>
+    </div>
+    <label>What do you study or do?</label>
+    <input type="text" id="pStudy" placeholder="For example: Student">
+    <label>Favourite sport</label>
+    <div id="pSportChips"></div>
+    <label>About me</label>
+    <textarea id="pAbout" placeholder="Write a few lines about yourself and your dreams..."></textarea>
+    <button class="main" onclick="saveProfile()">Save profile</button>
+    <div class="note" id="profileNote" style="display:none"></div>
+  </div>
+</div>
+
+<div id="goals" class="screen">
+  <h2>Goals</h2>
+  <p class="sub">Write your own goals. Tap a goal to tick it off.</p>
+  <div class="card">
+    <h3>Goal for the year</h3>
+    <div class="note" id="yearGoalBox" style="margin-top:0">No yearly goal yet.</div>
+    <input type="text" id="yearGoalInput" placeholder="Write or change your yearly goal" style="margin-top:20px">
+    <button class="main" onclick="saveYearGoal()">Save yearly goal</button>
+  </div>
+  <div class="card">
+    <h3>My goals</h3>
+    <label>My goal</label>
+    <input type="text" id="goalText" placeholder="Write a goal in your own words">
+    <label>By when</label>
+    <input type="text" id="goalWhen" placeholder="For example: End of the month">
+    <button class="main" onclick="addGoal()">Add goal</button>
+    <ul id="goalList"></ul>
+  </div>
+</div>
+<div id="careers" class="screen">
+  <h2>Careers</h2>
+  <p class="sub">Tap a job to read what it takes, then tap to watch videos about it.</p>
+  <div class="card">
+    <h3>Sport</h3>
+    <div id="careerSport"></div>
+    <h3 style="margin-top:34px">Science and tech</h3>
+    <div id="careerTech"></div>
+    <h3 style="margin-top:34px">Business and creative</h3>
+    <div id="careerBiz"></div>
+    <div class="note" id="careerNote">Tap a career to see what it takes.</div>
+    <button class="main" onclick="careerVideos()">Watch videos about this job</button>
+    <button class="alt" onclick="careerSpeak()">Hear it</button>
+  </div>
+</div>
+
+<div id="videos" class="screen">
+  <h2>Sport Videos</h2>
+  <p class="sub">Tap a sport, then tap the kind of video you want.</p>
+  <div class="card">
+    <h3>Pick a sport</h3>
+    <div id="sportChips"></div>
+    <label>Kind of video</label>
+    <div id="kindChips"></div>
+    <button class="main" onclick="goSport()">Watch</button>
+    <div class="note">Videos open on YouTube in a new tab.</div>
+  </div>
+</div>
+
+<div id="training" class="screen">
+  <h2>Training</h2>
+  <p class="sub">Tap what you did today. No typing.</p>
+  <div class="card">
+    <h3>This week</h3>
+    <div class="stat" id="weekCount">0</div>
+    <div class="muted">sessions in the last 7 days</div>
+    <div class="chart" id="weekChart"></div>
+  </div>
+  <div class="card">
+    <h3>Log a session</h3>
+    <label>Exercise</label>
+    <div id="exChips"></div>
+    <label>How long</label>
+    <div id="minChips"></div>
+    <label>How did it feel</label>
+    <div id="feelChips"></div>
+    <button class="main" onclick="logSession()">Save session</button>
+    <ul id="sessionList"></ul>
+  </div>
+</div>
+
+<div id="nutrition" class="screen">
+  <h2>Nutrition</h2>
+  <p class="sub">Tap what you ate and drank today.</p>
+  <div class="card">
+    <h3>Water today</h3>
+    <div class="stat" id="waterCount">0</div>
+    <div class="muted">glasses (goal: 8)</div>
+    <button class="main" onclick="addWater(1)">Add a glass</button>
+    <button class="alt" onclick="addWater(-1)">Remove one</button>
+  </div>
+  <div class="card">
+    <h3>Log a meal</h3>
+    <label>Meal</label>
+    <div id="mealTypeChips"></div>
+    <label>What did you have</label>
+    <div id="foodChips"></div>
+    <button class="main" onclick="addMeal()">Save meal</button>
+    <ul id="mealList"></ul>
+  </div>
+</div>
+
+<div id="sleep" class="screen">
+  <h2>Sleep</h2>
+  <p class="sub">Rest is part of training. Tap your hours.</p>
+  <div class="card">
+    <h3>Last 7 nights</h3>
+    <div class="stat" id="sleepAvg">0</div>
+    <div class="muted">average hours per night</div>
+    <div class="chart" id="sleepChart"></div>
+  </div>
+  <div class="card">
+    <h3>Log last night</h3>
+    <label>Hours slept</label>
+    <div id="hourChips"></div>
+    <label>How did you feel</label>
+    <div id="sleepFeelChips"></div>
+    <button class="main" onclick="addSleep()">Save</button>
+    <ul id="sleepList"></ul>
+  </div>
+</div>
+
+<div id="skills" class="screen">
+  <h2>Skills</h2>
+  <p class="sub">Tap a skill, read the tip, then watch videos about it.</p>
+  <div class="card">
+    <h3>Choose a skill</h3>
+    <div id="skillChips"></div>
+    <div class="note" id="skillNote">Tap a skill to begin.</div>
+    <button class="main" onclick="skillVideos()">Watch videos</button>
+    <button class="alt" onclick="coachSpeak()">Hear the coach</button>
+  </div>
+</div>
+<div id="languages" class="screen">
+  <h2>Languages</h2>
+  <p class="sub">Tap a language, then play the quiz. Tap the right answer.</p>
+  <div class="card">
+    <h3>Pick a language</h3>
+    <div id="langChips"></div>
+    <button class="main" onclick="startQuiz()">Start quiz</button>
+    <button class="alt" onclick="toggleMusic()" id="musicBtn">Music: off</button>
+    <button class="alt" onclick="langVideos()">Watch lessons</button>
+  </div>
+  <div id="quizStage" class="quizStage" style="display:none">
+    <div class="quizTop"><span id="quizScore">Score 0</span><span id="quizCount">1 / 8</span></div>
+    <div class="quizQ" id="quizQ">Question</div>
+    <div id="quizAnswers"></div>
+    <div class="quizMsg" id="quizMsg"></div>
+  </div>
+</div>
+
+<div id="habits" class="screen">
+  <h2>Habits</h2>
+  <p class="sub">Tap a habit to tick it for today. Ticks reset each day.</p>
+  <div class="card">
+    <h3>Today</h3>
+    <div id="habitList"></div>
+    <div class="note" id="habitNote">Tick your habits to keep your streak strong.</div>
+  </div>
+</div>
+
+<div id="explore" class="screen">
+  <h2>Explore the World</h2>
+  <p class="sub">Tap a city, then tap what you want to find.</p>
+  <div class="card">
+    <h3>Pick a city</h3>
+    <div id="cityChips"></div>
+    <label>What to find</label>
+    <div id="findChips"></div>
+    <button class="main" onclick="goExplore()">Go</button>
+    <div class="note" id="exploreNote">Results open in a new tab.</div>
+  </div>
+</div>
+
+<div id="news" class="screen">
+  <h2>News</h2>
+  <p class="sub">Tap a topic to read the latest.</p>
+  <div class="card">
+    <h3>Topics</h3>
+    <div id="newsChips"></div>
+    <button class="main" onclick="goNews()">Read news</button>
+  </div>
+</div>
+
+<div id="review" class="screen">
+  <h2>Daily Review</h2>
+  <p class="sub">Two minutes at the end of the day. Write in your own words.</p>
+  <div class="card">
+    <label>What went well today?</label>
+    <textarea id="revGood" placeholder="Write here..."></textarea>
+    <label>What will I improve tomorrow?</label>
+    <textarea id="revBetter" placeholder="Write one thing..."></textarea>
+    <button class="main" onclick="addReview()">Save review</button>
+    <ul id="reviewList"></ul>
+  </div>
+</div>
+
+<div id="notes" class="screen">
+  <h2>Notes</h2>
+  <p class="sub">Save ideas, reminders, or anything you want to remember.</p>
+  <div class="card">
+    <label>Title</label>
+    <input type="text" id="noteTitle" placeholder="Note title">
+    <label>Note</label>
+    <textarea id="noteBody" placeholder="Write here..."></textarea>
+    <button class="main" onclick="addNote()">Save note</button>
+    <ul id="noteList"></ul>
+  </div>
+</div>
+
+<div id="match" class="screen">
+  <h2>Focus and Timers</h2>
+  <p class="sub">Work in two halves. Pick the ringtone that plays when time is up.</p>
+  <div class="card">
+    <h3>Focus clock</h3>
+    <div class="hero" style="text-align:center;margin-bottom:0">
+      <div class="label" id="half">First half</div>
+      <div class="time" id="matchTime">25:00</div>
+    </div>
+    <button class="main" onclick="startMatch()">Start</button>
+    <button class="alt" onclick="stopMatch()">Stop</button>
+  </div>
+  <div class="card">
+    <h3>Ringtone</h3>
+    <p class="muted">Tap one to hear it. The chosen one plays when a timer finishes.</p>
+    <div id="toneChips"></div>
+  </div>
+  <div class="card">
+    <h3>Routine</h3>
+    <label id="wakeLabel">Wake up time</label>
+    <input type="time" id="wake" value="07:00" onchange="saveTimes()">
+    <label id="sleepLabel">Bedtime</label>
+    <input type="time" id="sleepTime" value="21:00" onchange="saveTimes()">
+  </div>
+</div>
+
+<style>
+  .quizStage { position: relative; overflow: hidden; border-radius: 14px; padding: 44px 34px; margin-bottom: 40px; background: linear-gradient(135deg, #1d2a44, #2a1f44, #1f3a44, #1d2a44); background-size: 400% 400%; animation: drift 12s ease infinite; border: 1px solid #2f3d56; }
+  @keyframes drift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+  .quizStage::before, .quizStage::after { content: ''; position: absolute; border-radius: 50%; filter: blur(30px); opacity: 0.45; animation: floaty 7s ease-in-out infinite; }
+  .quizStage::before { width: 160px; height: 160px; background: #d4a64a; top: -40px; right: -30px; }
+  .quizStage::after { width: 200px; height: 200px; background: #5b7aa8; bottom: -60px; left: -50px; animation-delay: 2s; }
+  @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-26px); } }
+  .quizTop, .quizQ, #quizAnswers, .quizMsg { position: relative; z-index: 1; }
+  .quizTop { display: flex; justify-content: space-between; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: #d4a64a; font-weight: 800; margin-bottom: 30px; }
+  .quizQ { font-size: 28px; font-weight: 800; color: #eef1f6; margin-bottom: 34px; line-height: 1.5; }
+  #quizAnswers button { display: block; width: 100%; text-align: left; background: rgba(15, 21, 32, 0.75); color: #eef1f6; border: 1px solid #3a4a68; border-radius: 10px; padding: 20px 24px; margin: 0 0 18px 0; font-size: 17px; font-weight: 700; cursor: pointer; }
+  #quizAnswers button.right { background: #d4a64a; color: #0f1520; border-color: #d4a64a; }
+  #quizAnswers button.wrong { background: #5a2a36; border-color: #8a3f50; }
+  .quizMsg { font-size: 16px; font-weight: 700; color: #f0c15a; min-height: 28px; margin-top: 10px; }
+</style>
+<nav id="navBar"></nav>
+
+<script>
+var words = {
+  en: { greet: 'Welcome back', toSleep: 'Time to bedtime', wake: 'Wake up time', sleep: 'Bedtime', wakeNow: 'Good morning. Time to wake up.', bedNow: 'It is bedtime. Rest well.', welcome: 'Welcome to Apex World, NAME. I am your coach. Keep your streak alive, earn points, and build the life you want. Where do you want to start?', half1: 'First half', halfTime: 'Half time', half2: 'Second half', fullTime: 'Full time' },
+  ar: { greet: 'أهلاً بعودتك', toSleep: 'الوقت المتبقي للنوم', wake: 'وقت الاستيقاظ', sleep: 'وقت النوم', wakeNow: 'صباح الخير. حان وقت الاستيقاظ.', bedNow: 'حان وقت النوم. نم جيداً.', welcome: 'أهلاً بك في أبكس وورلد يا NAME. أنا مدربك. حافظ على سلسلتك، واجمع النقاط، وابنِ الحياة التي تريدها. من أين تريد أن تبدأ؟', half1: 'الشوط الأول', halfTime: 'استراحة', half2: 'الشوط الثاني', fullTime: 'نهاية الوقت' },
+  fr: { greet: 'Bon retour', toSleep: 'Temps avant le coucher', wake: 'Heure du réveil', sleep: 'Heure du coucher', wakeNow: 'Bonjour. C est l heure de se lever.', bedNow: 'C est l heure de dormir. Repose-toi bien.', welcome: 'Bienvenue dans Apex World, NAME. Je suis ton coach. Garde ta série, gagne des points et construis la vie que tu veux. Par où veux-tu commencer?', half1: 'Première mi-temps', halfTime: 'Mi-temps', half2: 'Seconde mi-temps', fullTime: 'Fin du temps' },
+  es: { greet: 'Bienvenido de nuevo', toSleep: 'Tiempo para dormir', wake: 'Hora de despertar', sleep: 'Hora de dormir', wakeNow: 'Buenos días. Es hora de despertar.', bedNow: 'Es hora de dormir. Descansa bien.', welcome: 'Bienvenido a Apex World, NAME. Soy tu entrenador. Mantén tu racha, gana puntos y construye la vida que quieres. ¿Por dónde quieres empezar?', half1: 'Primer tiempo', halfTime: 'Descanso', half2: 'Segundo tiempo', fullTime: 'Tiempo completo' }
+};
+
+var quotes = [
+  'Hard work beats talent when talent does not work hard.',
+  'You miss every shot you do not take.',
+  'Champions train when nobody is watching.',
+  'It always seems impossible until it is done.',
+  'Small steps every day lead to big results.',
+  'Fall seven times, stand up eight.',
+  'The best time to start was yesterday. The next best time is now.'
+];
+
+var challenges = [
+  'Drink eight glasses of water today.',
+  'Do ten minutes of stretching.',
+  'Learn five new words in another language.',
+  'Go to bed on time tonight.',
+  'Help someone without being asked.',
+  'Finish your homework before anything else.',
+  'Walk or run for twenty minutes.'
+];
+
+var habitList = ['Drink water', 'Move your body', 'Study for 30 minutes', 'Read for 10 minutes', 'Eat a fruit or vegetable', 'Sleep on time'];
+
+var pets = [
+  { id: 'lion', face: 'LION', stages: ['Cub', 'Young lion', 'Lion', 'King'] },
+  { id: 'falcon', face: 'FALCON', stages: ['Chick', 'Young falcon', 'Falcon', 'Sky master'] },
+  { id: 'robot', face: 'ROBOT', stages: ['Spark', 'Bot', 'Mech', 'Titan'] }
+];
+
+var avColors = ['#d4a64a', '#5b7aa8', '#8e6fa8', '#3f8fa0', '#b5654a', '#7a8a99'];
+var avFaces = [':)', ':D', '8)', ';)', ':P', 'B)'];
+
+var milestoneDefs = [3, 7, 14, 30, 60, 100];
+
+var levelNames = ['Rookie', 'Challenger', 'Contender', 'Veteran', 'Elite', 'Master', 'Legend'];
+
+var skillTips = {
+  Discipline: 'Discipline means doing the work when nobody is watching. Small habits every day beat one big effort once a month.',
+  Confidence: 'Confidence is built in practice, not on the big day. Every drill you finish is proof that you can do it.',
+  Pressure: 'Pressure means it matters. Breathe slowly and focus only on the next action, not the whole game.',
+  Teamwork: 'Great teams pass the ball. Respect your teammates and help them up. Good friends beat lonely stars.',
+  Comebacks: 'Every great player has lost, been dropped or been injured. What makes them great is that they came back.'
+};
+
+var careerGroups = {
+  careerSport: ['Footballer', 'Coach', 'Physio', 'Sports analyst', 'Commentator'],
+  careerTech: ['Doctor', 'Engineer', 'Software developer', 'Pilot'],
+  careerBiz: ['Business owner', 'Architect', 'Content creator']
+};
+
+var careerTips = {
+  'Footballer': 'Start at a local club or academy, train every day, and keep school going because a career can end early. Join a team, get scouted, build fitness and stay disciplined.',
+  'Coach': 'A coach plans training and leads the team. Play and watch lots of football, take coaching badges, study sports science, and start with young teams.',
+  'Physio': 'A physio helps injured players recover. Do well in biology, study physiotherapy at university, then work with clubs or clinics.',
+  'Sports analyst': 'An analyst studies match data to help teams win. Build maths and computer skills, learn data tools, then join a club or media company.',
+  'Commentator': 'A commentator describes the game live. Practise speaking, know the sport deeply, record your own commentary, and start online or on local radio.',
+  'Doctor': 'A doctor looks after people, including athletes. Get top marks in science, pass the entrance exam, and study medicine for about six years.',
+  'Engineer': 'Engineers design boots, stadiums, cars and phones. You need strong maths and physics, then an engineering degree.',
+  'Software developer': 'Developers build apps and games. Learn to code, build small projects, study computer science or learn online, and make a portfolio.',
+  'Pilot': 'Pilots fly planes around the world. You need maths, physics and English, a medical check, flight school, and many flying hours.',
+  'Business owner': 'A business owner builds something people want. Spot a problem, test a small idea, learn money basics, and find your first customers.',
+  'Architect': 'Architects design buildings and stadiums. You need maths and drawing skills, an architecture degree, and a portfolio.',
+  'Content creator': 'Creators make videos and posts people enjoy. Pick a topic you love, post often, learn editing, and stay safe online.'
+};
+
+var sports = ['Football', 'Basketball', 'Tennis', 'Boxing', 'Swimming', 'Running', 'Cricket', 'Gym'];
+var kinds = ['Drills', 'Skills', 'Best moments', 'Fitness', 'Beginners'];
+var exercises = ['Shooting', 'Sprints', 'Dribbling', 'Strength', 'Stretching', 'Match played', 'Swimming', 'Running'];
+var minutes = ['10 min', '20 min', '30 min', '45 min', '60 min', '90 min'];
+var feels = ['Great', 'Good', 'Okay', 'Tired'];
+var mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+var foods = ['Eggs', 'Chicken', 'Rice', 'Fruit', 'Vegetables', 'Salad', 'Fish', 'Yoghurt', 'Pasta', 'Sandwich', 'Soup', 'Nuts'];
+var hours = ['5', '6', '7', '8', '9', '10', '11'];
+var cities = ['Dubai', 'London', 'Tokyo', 'New York', 'Paris', 'Istanbul', 'Cairo', 'Sydney', 'Madrid', 'Rome'];
+var finds = ['Top places', 'Parks', 'Sports venues', 'Food', 'Map'];
+var newsTopics = ['Sport', 'Technology', 'Science', 'World', 'Business', 'Health', 'Space', 'Football'];
+
+var langNames = ['English', 'French', 'Spanish', 'Arabic', 'Turkish', 'Japanese'];
+
+var quizBank = {
+  French: [
+    ['What does Bonjour mean?', ['Hello', 'Goodbye', 'Thanks', 'Sorry'], 0],
+    ['What does Merci mean?', ['Please', 'Thank you', 'Yes', 'Water'], 1],
+    ['What does Chat mean?', ['Dog', 'Bird', 'Cat', 'Fish'], 2],
+    ['What does Pomme mean?', ['Apple', 'Bread', 'Milk', 'Rice'], 0],
+    ['What does Au revoir mean?', ['Good night', 'Goodbye', 'Welcome', 'Please'], 1],
+    ['What does Eau mean?', ['Fire', 'Earth', 'Water', 'Wind'], 2],
+    ['What does Trois mean?', ['One', 'Two', 'Four', 'Three'], 3],
+    ['What does Ami mean?', ['Friend', 'Enemy', 'Teacher', 'Brother'], 0]
+  ],
+  Spanish: [
+    ['What does Hola mean?', ['Goodbye', 'Hello', 'Thanks', 'Sorry'], 1],
+    ['What does Gracias mean?', ['Thank you', 'Please', 'Yes', 'No'], 0],
+    ['What does Perro mean?', ['Cat', 'Bird', 'Dog', 'Horse'], 2],
+    ['What does Agua mean?', ['Water', 'Fire', 'Milk', 'Juice'], 0],
+    ['What does Amigo mean?', ['Enemy', 'Friend', 'Teacher', 'Boy'], 1],
+    ['What does Tres mean?', ['One', 'Two', 'Three', 'Four'], 2],
+    ['What does Buenos dias mean?', ['Good night', 'Good morning', 'Goodbye', 'Welcome'], 1],
+    ['What does Casa mean?', ['Car', 'School', 'Street', 'House'], 3]
+  ],
+  Arabic: [
+    ['What does Shukran mean?', ['Hello', 'Sorry', 'Thank you', 'Please'], 2],
+    ['What does Marhaba mean?', ['Hello', 'Goodbye', 'Water', 'Friend'], 0],
+    ['What does Ma means water. Which word is water?', ['Naar', 'Ma', 'Shams', 'Qamar'], 1],
+    ['What does Kitab mean?', ['Pen', 'Door', 'Book', 'Table'], 2],
+    ['What does Sadiq mean?', ['Friend', 'Teacher', 'Brother', 'Boy'], 0],
+    ['What does Wahid mean?', ['Three', 'One', 'Five', 'Ten'], 1],
+    ['What does Shams mean?', ['Moon', 'Star', 'Sun', 'Sky'], 2],
+    ['What does Bayt mean?', ['House', 'Car', 'School', 'Road'], 0]
+  ],
+  Turkish: [
+    ['What does Merhaba mean?', ['Goodbye', 'Hello', 'Thanks', 'Sorry'], 1],
+    ['What does Tesekkurler mean?', ['Please', 'Yes', 'Thank you', 'No'], 2],
+    ['What does Su mean?', ['Water', 'Fire', 'Bread', 'Tea'], 0],
+    ['What does Arkadas mean?', ['Teacher', 'Friend', 'Brother', 'Boy'], 1],
+    ['What does Kedi mean?', ['Dog', 'Bird', 'Cat', 'Fish'], 2],
+    ['What does Uc mean?', ['One', 'Two', 'Three', 'Four'], 2],
+    ['What does Gunaydin mean?', ['Good morning', 'Good night', 'Goodbye', 'Welcome'], 0],
+    ['What does Ev mean?', ['Car', 'House', 'School', 'Road'], 1]
+  ],
+  Japanese: [
+    ['What does Konnichiwa mean?', ['Goodbye', 'Thanks', 'Hello', 'Sorry'], 2],
+    ['What does Arigato mean?', ['Thank you', 'Please', 'Yes', 'No'], 0],
+    ['What does Mizu mean?', ['Fire', 'Water', 'Tea', 'Rice'], 1],
+    ['What does Neko mean?', ['Dog', 'Bird', 'Fish', 'Cat'], 3],
+    ['What does Sayonara mean?', ['Hello', 'Welcome', 'Goodbye', 'Thanks'], 2],
+    ['What does San mean (the number)?', ['One', 'Two', 'Three', 'Four'], 2],
+    ['What does Tomodachi mean?', ['Friend', 'Teacher', 'Brother', 'Boy'], 0],
+    ['What does Ohayo mean?', ['Good night', 'Good morning', 'Goodbye', 'Hello'], 1]
+  ],
+  English: [
+    ['Which word means very big?', ['Tiny', 'Huge', 'Narrow', 'Quiet'], 1],
+    ['Which word means the opposite of fast?', ['Slow', 'Quick', 'Rapid', 'Swift'], 0],
+    ['Choose the correct sentence.', ['He go to school.', 'He goes to school.', 'He going school.', 'He gone school.'], 1],
+    ['Which word means to begin?', ['Finish', 'Stop', 'Start', 'End'], 2],
+    ['Which word is a synonym of happy?', ['Sad', 'Angry', 'Joyful', 'Tired'], 2],
+    ['What is the plural of child?', ['Childs', 'Children', 'Childes', 'Childrens'], 1],
+    ['Which word means very tired?', ['Exhausted', 'Excited', 'Energetic', 'Eager'], 0],
+    ['Choose the correct word: I have ___ apple.', ['a', 'an', 'the', 'some'], 1]
+  ]
+};
+
+var tones = ['Chime', 'Beep', 'Bell', 'Pulse', 'Rise', 'Drop'];
+var toneDefs = {
+  Chime: [[660, 0.15], [880, 0.15], [1100, 0.3]],
+  Beep: [[800, 0.2], [0, 0.1], [800, 0.2], [0, 0.1], [800, 0.2]],
+  Bell: [[1200, 0.5], [900, 0.5], [1200, 0.6]],
+  Pulse: [[500, 0.1], [700, 0.1], [500, 0.1], [700, 0.1], [500, 0.1], [700, 0.1]],
+  Rise: [[400, 0.15], [500, 0.15], [600, 0.15], [800, 0.15], [1000, 0.3]],
+  Drop: [[1000, 0.15], [800, 0.15], [600, 0.15], [400, 0.3]]
+};
+
+var navItems = [['home', 'Home'], ['calendar', 'Calendar'], ['habits', 'Habits'], ['languages', 'Languages'], ['careers', 'Careers'], ['videos', 'Videos'], ['training', 'Training'], ['nutrition', 'Nutrition'], ['sleep', 'Sleep'], ['skills', 'Skills'], ['explore', 'Explore'], ['news', 'News'], ['goals', 'Goals'], ['review', 'Review'], ['notes', 'Notes'], ['match', 'Timers'], ['profile', 'Profile']];
+var lang = 'en';
+var S = {};
+try { S = JSON.parse(localStorage.getItem('apex_state') || '{}'); } catch (e) { S = {}; }
+S.name = S.name || '';
+S.age = S.age || '';
+S.avColor = S.avColor || avColors[0];
+S.avFace = S.avFace || avFaces[0];
+S.pet = S.pet || '';
+S.petName = S.petName || '';
+S.yearGoal = S.yearGoal || '';
+S.xp = S.xp || 0;
+S.checkins = S.checkins || {};
+S.habits = S.habits || {};
+S.dayNotes = S.dayNotes || {};
+S.goals = S.goals || [];
+S.sessions = S.sessions || [];
+S.meals = S.meals || [];
+S.water = S.water || {};
+S.sleeps = S.sleeps || [];
+S.reviews = S.reviews || [];
+S.notes = S.notes || [];
+S.profile = S.profile || {};
+S.tone = S.tone || 'Chime';
+S.challengeDone = S.challengeDone || {};
+S.wake = S.wake || '07:00';
+S.bed = S.bed || '21:00';
+
+var picked = { city: 'Dubai', find: 'Top places', sport: 'Football', kind: 'Drills', news: 'Sport', skill: 'Discipline', career: '', exercise: 'Shooting', minute: '30 min', feel: 'Good', mealType: 'Breakfast', foods: [], hour: '8', sleepFeel: 'Good', langPick: 'French', pickedPet: '', sportFav: '' };
+var calYear = new Date().getFullYear();
+var calMonth = new Date().getMonth();
+var calSelected = '';
+var currentScreen = 'home';
+var matchTimer = null, matchSeconds = 1500, matchStage = 1;
+var lastAlarm = '';
+
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function save() { localStorage.setItem('apex_state', JSON.stringify(S)); }
+function pad(n) { return String(n).padStart(2, '0'); }
+function dateKey(d) { d = d || new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function todayKey() { return dateKey(new Date()); }
+function openUrl(u) { window.open(u, '_blank'); }
+
+function chips(containerId, list, current, onPick) {
+  var box = el(containerId);
+  if (!box) return;
+  box.innerHTML = '';
+  list.forEach(function (item) {
+    var c = document.createElement('span');
+    c.className = 'chip' + (item === current ? ' on' : '');
+    c.textContent = item;
+    c.onclick = function () { onPick(item); chips(containerId, list, item, onPick); };
+    box.appendChild(c);
+  });
+}
+
+function multiChips(containerId, list, selected) {
+  var box = el(containerId);
+  if (!box) return;
+  box.innerHTML = '';
+  list.forEach(function (item) {
+    var c = document.createElement('span');
+    c.className = 'chip' + (selected.indexOf(item) > -1 ? ' on' : '');
+    c.textContent = item;
+    c.onclick = function () {
+      var i = selected.indexOf(item);
+      if (i > -1) selected.splice(i, 1); else selected.push(item);
+      multiChips(containerId, list, selected);
+    };
+    box.appendChild(c);
+  });
+}
+
+function speak(text) {
+  try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = lang; speechSynthesis.speak(u); } catch (e) {}
+}
+
+function welcome() { speak(words[lang].welcome.replace('NAME', S.name || 'champion')); }
+
+function addXP(n) {
+  S.xp += n;
+  save();
+  renderLevel();
+}
+
+function levelInfo() {
+  var lvl = Math.min(levelNames.length - 1, Math.floor(S.xp / 100));
+  var into = S.xp - lvl * 100;
+  return { name: levelNames[lvl], num: lvl + 1, into: into, pct: lvl === levelNames.length - 1 ? 100 : Math.min(100, into) };
+}
+
+function renderLevel() {
+  var info = levelInfo();
+  var box = el('petMood');
+  if (box) box.textContent = 'Level ' + info.num + ' ' + info.name + ' - ' + S.xp + ' XP';
+}
+
+function calcStreak() {
+  var count = 0;
+  var d = new Date();
+  if (!S.checkins[dateKey(d)]) d.setDate(d.getDate() - 1);
+  while (S.checkins[dateKey(d)]) { count++; d.setDate(d.getDate() - 1); }
+  return count;
+}
+
+function petStage(streak) {
+  if (streak >= 30) return 3;
+  if (streak >= 10) return 2;
+  if (streak >= 3) return 1;
+  return 0;
+}
+
+function renderStreak() {
+  var streak = calcStreak();
+  el('streakNum').textContent = streak;
+  el('hello').textContent = words[lang].greet + ', ' + (S.name || 'champion');
+  var days = el('streakDays');
+  days.innerHTML = '';
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(); d.setDate(d.getDate() - i);
+    var s = document.createElement('span');
+    if (S.checkins[dateKey(d)]) s.className = 'on';
+    days.appendChild(s);
+  }
+  var p = null;
+  pets.forEach(function (x) { if (x.id === S.pet) p = x; });
+  if (p) {
+    el('petBox').textContent = p.face;
+    el('petBox').style.fontSize = '24px';
+    el('petBox').style.fontWeight = '900';
+    el('petBox').style.color = '#f0c15a';
+    el('petName').textContent = (S.petName || 'Pet') + ' the ' + p.stages[petStage(streak)];
+  }
+  renderLevel();
+  var btn = el('checkInBtn');
+  if (S.checkins[todayKey()]) { btn.textContent = 'Checked in today'; btn.disabled = true; btn.style.opacity = '0.6'; }
+  else { btn.textContent = 'Check in today'; btn.disabled = false; btn.style.opacity = '1'; }
+  renderMilestones(streak);
+}
+
+function checkIn() {
+  if (S.checkins[todayKey()]) return;
+  S.checkins[todayKey()] = true;
+  S.xp += 20;
+  save();
+  var card = el('streakCard');
+  card.classList.remove('pop');
+  void card.offsetWidth;
+  card.classList.add('pop');
+  renderStreak();
+  renderCalendar();
+  speak('Streak ' + calcStreak() + '. Well done, ' + (S.name || 'champion') + '.');
+}
+
+function renderMilestones(streak) {
+  var box = el('milestones');
+  box.innerHTML = '';
+  var next = null;
+  milestoneDefs.forEach(function (m) {
+    var b = document.createElement('span');
+    var got = streak >= m;
+    b.className = 'chip' + (got ? ' on' : '');
+    b.textContent = m + ' days';
+    box.appendChild(b);
+    if (!got && next === null) next = m;
+  });
+  el('nextMilestone').textContent = next === null ? 'You unlocked every milestone. Legend.' : 'Next milestone: ' + next + ' days. ' + (next - streak) + ' to go.';
+}
+
+function renderChallenge() {
+  var idx = new Date().getDate() % challenges.length;
+  el('challengeText').textContent = challenges[idx];
+  var btn = el('challengeBtn');
+  if (S.challengeDone[todayKey()]) { btn.textContent = 'Done'; btn.disabled = true; btn.style.opacity = '0.6'; }
+  else { btn.textContent = 'Mark as done'; btn.disabled = false; btn.style.opacity = '1'; }
+}
+
+function doChallenge() {
+  if (S.challengeDone[todayKey()]) return;
+  S.challengeDone[todayKey()] = true;
+  addXP(30);
+  renderChallenge();
+}
+
+function buildNav() {
+  var nav = el('navBar');
+  nav.innerHTML = '';
+  navItems.forEach(function (it) {
+    var b = document.createElement('button');
+    b.id = 'nav_' + it[0];
+    b.textContent = it[1];
+    b.onclick = function () { show(it[0]); };
+    nav.appendChild(b);
+  });
+}
+
+function show(name) {
+  var all = document.querySelectorAll('.screen');
+  for (var i = 0; i < all.length; i++) all[i].classList.remove('active');
+  var target = el(name);
+  if (target) target.classList.add('active');
+  navItems.forEach(function (it) {
+    var b = el('nav_' + it[0]);
+    if (b) b.classList.toggle('on', it[0] === name);
+  });
+  var cur = el('nav_' + name);
+  if (cur) cur.scrollIntoView({ inline: 'center', block: 'nearest' });
+  currentScreen = name;
+  window.scrollTo(0, 0);
+}
+
+function setLang(l) {
+  lang = l;
+  document.documentElement.lang = l;
+  document.body.dir = (l === 'ar') ? 'rtl' : 'ltr';
+  el('wakeLabel').textContent = words[l].wake;
+  el('sleepLabel').textContent = words[l].sleep;
+  renderStreak();
+}
+
+function renderAvatarPickers(colorBox, faceBox, previewIds) {
+  var cb = el(colorBox);
+  cb.innerHTML = '';
+  avColors.forEach(function (c) {
+    var s = document.createElement('span');
+    s.className = 'swatch' + (c === S.avColor ? ' on' : '');
+    s.style.background = c;
+    s.onclick = function () { S.avColor = c; save(); renderAvatarPickers(colorBox, faceBox, previewIds); };
+    cb.appendChild(s);
+  });
+  chips(faceBox, avFaces, S.avFace, function (f) { S.avFace = f; save(); updateAvatarPreview(previewIds); });
+  updateAvatarPreview(previewIds);
+}
+
+function updateAvatarPreview(ids) {
+  ids.forEach(function (id) {
+    var a = el(id);
+    if (a) { a.style.background = S.avColor; a.textContent = S.avFace; a.style.color = '#0f1520'; a.style.fontWeight = '900'; }
+  });
+}
+
+function nextStep(n) {
+  if (n === 2 && !el('sName').value.trim()) { alert('Please type your name.'); return; }
+  if (n === 3 && !el('sAge').value) { alert('Please type your age.'); return; }
+  if (n === 4 && !S.avColor) return;
+  if (n === 5 && !picked.pickedPet) { alert('Please pick a pet.'); return; }
+  showStep(n);
+}
+
+function showStep(n) {
+  for (var i = 1; i <= 5; i++) el('st' + i).classList.toggle('on', i === n);
+  var dots = document.querySelectorAll('#setup .dots span');
+  for (var j = 0; j < dots.length; j++) dots[j].classList.toggle('on', j === n - 1);
+}
+
+function renderPetChoices() {
+  var box = el('petChoices');
+  box.innerHTML = '';
+  pets.forEach(function (p) {
+    var c = document.createElement('span');
+    c.className = 'chip' + (picked.pickedPet === p.id ? ' on' : '');
+    c.textContent = p.face + ' - ' + p.stages[0];
+    c.onclick = function () { picked.pickedPet = p.id; renderPetChoices(); };
+    box.appendChild(c);
+  });
+}
+
+function finishSetup() {
+  S.name = el('sName').value.trim();
+  S.age = el('sAge').value;
+  S.pet = picked.pickedPet;
+  S.petName = el('sPetName').value.trim() || 'Buddy';
+  S.yearGoal = el('sYearGoal').value.trim();
+  S.profile.name = S.name;
+  S.profile.age = S.age;
+  save();
+  el('setup').style.display = 'none';
+  initApp();
+  welcome();
+}
+
+function initApp() {
+  buildNav();
+  show('home');
+  renderStreak();
+  renderChallenge();
+  renderProfile();
+  renderAvatarPickers('profColors', 'profFaces', ['profAvatar']);
+  renderCalendar();
+  renderHabits();
+  renderGoals();
+  renderYearGoal();
+  initChips();
+  renderTraining();
+  renderNutrition();
+  renderSleep();
+  renderReviews();
+  renderNotes();
+  el('quoteBox').textContent = quotes[new Date().getDate() % quotes.length];
+  el('wake').value = S.wake;
+  el('sleepTime').value = S.bed;
+}
+
+function renderProfile() {
+  var p = S.profile;
+  el('pName').value = p.name || S.name || '';
+  el('pAge').value = p.age || S.age || '';
+  el('pCountry').value = p.country || '';
+  el('pStudy').value = p.study || '';
+  el('pAbout').value = p.about || '';
+  picked.sportFav = p.sport || '';
+  chips('pSportChips', sports, picked.sportFav, function (s) { picked.sportFav = s; });
+}
+
+function saveProfile() {
+  S.profile = { name: el('pName').value.trim(), age: el('pAge').value, country: el('pCountry').value.trim(), study: el('pStudy').value.trim(), sport: picked.sportFav, about: el('pAbout').value.trim() };
+  if (S.profile.name) S.name = S.profile.name;
+  save();
+  renderStreak();
+  var n = el('profileNote');
+  n.style.display = 'block';
+  n.textContent = 'Profile saved.';
+}
+
+function saveYearGoal() {
+  S.yearGoal = el('yearGoalInput').value.trim();
+  save();
+  renderYearGoal();
+}
+
+function renderYearGoal() {
+  el('yearGoalBox').textContent = S.yearGoal || 'No yearly goal yet.';
+}
+
+function addGoal() {
+  var t = el('goalText').value.trim();
+  if (!t) return;
+  S.goals.unshift({ text: t, when: el('goalWhen').value.trim(), done: false });
+  el('goalText').value = ''; el('goalWhen').value = '';
+  save();
+  renderGoals();
+}
+
+function renderGoals() {
+  el('goalList').innerHTML = S.goals.map(function (g, i) {
+    return '<li><div style="' + (g.done ? 'text-decoration:line-through;opacity:0.6' : '') + '" onclick="toggleGoal(' + i + ')">' + esc(g.text) + '<small>' + esc(g.when || 'No date') + (g.done ? ' - done' : ' - tap to finish') + '</small></div><button onclick="deleteGoal(' + i + ')">x</button></li>';
+  }).join('');
+}
+
+function toggleGoal(i) {
+  S.goals[i].done = !S.goals[i].done;
+  if (S.goals[i].done) S.xp += 50;
+  save();
+  renderGoals();
+  renderLevel();
+}
+
+function deleteGoal(i) { S.goals.splice(i, 1); save(); renderGoals(); }
+
+function renderHabits() {
+  var key = todayKey();
+  S.habits[key] = S.habits[key] || [];
+  var box = el('habitList');
+  box.innerHTML = '';
+  habitList.forEach(function (h) {
+    var c = document.createElement('span');
+    var on = S.habits[key].indexOf(h) > -1;
+    c.className = 'chip' + (on ? ' on' : '');
+    c.textContent = h;
+    c.onclick = function () {
+      var arr = S.habits[key];
+      var i = arr.indexOf(h);
+      if (i > -1) { arr.splice(i, 1); } else { arr.push(h); S.xp += 10; }
+      save();
+      renderHabits();
+      renderLevel();
+    };
+    box.appendChild(c);
+  });
+  el('habitNote').textContent = S.habits[key].length + ' of ' + habitList.length + ' habits done today.';
+}
+
+function changeMonth(n) {
+  calMonth += n;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  var names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  el('monthTitle').textContent = names[calMonth] + ' ' + calYear;
+  var first = new Date(calYear, calMonth, 1).getDay();
+  var total = new Date(calYear, calMonth + 1, 0).getDate();
+  var html = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;text-align:center">';
+  ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].forEach(function (d) { html += '<div style="font-size:12px;color:#8a97ad;font-weight:800">' + d + '</div>'; });
+  for (var i = 0; i < first; i++) html += '<div></div>';
+  for (var d = 1; d <= total; d++) {
+    var key = calYear + '-' + pad(calMonth + 1) + '-' + pad(d);
+    var on = S.checkins[key];
+    var hasNote = S.dayNotes[key];
+    var isToday = key === todayKey();
+    var style = 'padding:14px 0;border-radius:8px;cursor:pointer;font-weight:800;border:2px solid ' + (key === calSelected ? '#eef1f6' : (isToday ? '#5b7aa8' : 'transparent')) + ';background:' + (on ? '#d4a64a' : '#1d2940') + ';color:' + (on ? '#0f1520' : '#cfd6e2') + ';';
+    html += '<div style="' + style + '" onclick="pickDay(\'' + key + '\')">' + d + (hasNote ? '<div style="font-size:8px">note</div>' : '') + '</div>';
+  }
+  html += '</div>';
+  el('calGrid').innerHTML = html;
+}
+
+function pickDay(key) {
+  calSelected = key;
+  el('dayNote').textContent = key + ': ' + (S.dayNotes[key] || 'No note yet.') + (S.checkins[key] ? ' You checked in this day.' : '');
+  el('dayInput').value = S.dayNotes[key] || '';
+  renderCalendar();
+}
+
+function saveDayNote() {
+  if (!calSelected) { alert('Tap a day first.'); return; }
+  var v = el('dayInput').value.trim();
+  if (v) S.dayNotes[calSelected] = v; else delete S.dayNotes[calSelected];
+  save();
+  pickDay(calSelected);
+}
+var audioCtx = null;
+var musicOn = false;
+var musicTimer = null;
+var musicStep = 0;
+
+function getCtx() {
+  if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+  return audioCtx;
+}
+
+function beep(freq, dur, type, vol) {
+  var ctx = getCtx();
+  if (!ctx || freq <= 0) return;
+  var o = ctx.createOscillator();
+  var g = ctx.createGain();
+  o.type = type || 'sine';
+  o.frequency.value = freq;
+  g.gain.value = vol || 0.15;
+  o.connect(g);
+  g.connect(ctx.destination);
+  o.start();
+  g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+  o.stop(ctx.currentTime + dur + 0.02);
+}
+
+function playTone(name) {
+  var seq = toneDefs[name] || toneDefs.Chime;
+  var t = 0;
+  seq.forEach(function (n) {
+    setTimeout(function () { beep(n[0], n[1], 'triangle', 0.25); }, t * 1000);
+    t += n[1] + 0.03;
+  });
+}
+
+function renderTones() {
+  chips('toneChips', tones, S.tone, function (t) { S.tone = t; save(); playTone(t); });
+}
+
+var melody = [262, 330, 392, 330, 294, 349, 440, 349, 262, 330, 392, 523, 392, 330, 294, 262];
+var bass = [131, 0, 131, 0, 147, 0, 147, 0, 131, 0, 131, 0, 98, 0, 98, 0];
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  el('musicBtn').textContent = 'Music: ' + (musicOn ? 'on' : 'off');
+  if (musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+  if (musicOn) {
+    getCtx();
+    musicTimer = setInterval(function () {
+      var i = musicStep % melody.length;
+      beep(melody[i], 0.22, 'sine', 0.06);
+      if (bass[i]) beep(bass[i], 0.3, 'triangle', 0.08);
+      musicStep++;
+    }, 280);
+  }
+}
+
+var quizList = [], quizIndex = 0, quizScore = 0, quizLocked = false;
+
+function langVideos() {
+  openUrl('https://www.youtube.com/results?search_query=' + encodeURIComponent('learn ' + picked.langPick + ' for beginners'));
+}
+
+function startQuiz() {
+  var bank = quizBank[picked.langPick];
+  if (!bank) return;
+  quizList = bank.slice().sort(function () { return Math.random() - 0.5; }).slice(0, 8);
+  quizIndex = 0;
+  quizScore = 0;
+  el('quizStage').style.display = 'block';
+  showQuestion();
+  el('quizStage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showQuestion() {
+  quizLocked = false;
+  if (quizIndex >= quizList.length) {
+    el('quizQ').textContent = 'Quiz finished. You scored ' + quizScore + ' out of ' + quizList.length + '.';
+    el('quizAnswers').innerHTML = '';
+    el('quizMsg').textContent = '+' + (quizScore * 15) + ' XP earned.';
+    S.xp += quizScore * 15;
+    save();
+    renderLevel();
+    playTone('Rise');
+    return;
+  }
+  var q = quizList[quizIndex];
+  el('quizScore').textContent = 'Score ' + quizScore;
+  el('quizCount').textContent = (quizIndex + 1) + ' / ' + quizList.length;
+  el('quizQ').textContent = q[0];
+  el('quizMsg').textContent = '';
+  var box = el('quizAnswers');
+  box.innerHTML = '';
+  q[1].forEach(function (a, i) {
+    var b = document.createElement('button');
+    b.textContent = a;
+    b.onclick = function () { answerQuiz(i, b); };
+    box.appendChild(b);
+  });
+}
+
+function answerQuiz(i, btn) {
+  if (quizLocked) return;
+  quizLocked = true;
+  var q = quizList[quizIndex];
+  var all = el('quizAnswers').getElementsByTagName('button');
+  if (i === q[2]) {
+    btn.classList.add('right');
+    quizScore++;
+    el('quizMsg').textContent = 'Correct!';
+    beep(880, 0.15, 'triangle', 0.2);
+  } else {
+    btn.classList.add('wrong');
+    all[q[2]].classList.add('right');
+    el('quizMsg').textContent = 'Not quite. The answer is ' + q[1][q[2]] + '.';
+    beep(220, 0.3, 'sawtooth', 0.12);
+  }
+  setTimeout(function () { quizIndex++; showQuestion(); }, 1400);
+}
+
+function renderCareers() {
+  Object.keys(careerGroups).forEach(function (box) {
+    chips(box, careerGroups[box], picked.career, function (c) {
+      picked.career = c;
+      el('careerNote').textContent = c + ': ' + careerTips[c];
+      Object.keys(careerGroups).forEach(function (b2) { chips(b2, careerGroups[b2], c, arguments.callee); });
+    });
+  });
+}
+
+function pickCareer(c) {
+  picked.career = c;
+  el('careerNote').textContent = c + ': ' + careerTips[c];
+  Object.keys(careerGroups).forEach(function (b) { chips(b, careerGroups[b], c, pickCareer); });
+}
+
+function careerVideos() {
+  if (!picked.career) { el('careerNote').textContent = 'Tap a career first.'; return; }
+  openUrl('https://www.youtube.com/results?search_query=' + encodeURIComponent('day in the life of a ' + picked.career + ' how to become one'));
+  S.xp += 5; save(); renderLevel();
+}
+
+function careerSpeak() {
+  if (!picked.career) return;
+  speak(careerTips[picked.career]);
+}
+
+function goSport() {
+  openUrl('https://www.youtube.com/results?search_query=' + encodeURIComponent(picked.sport + ' ' + picked.kind));
+}
+
+function skillVideos() {
+  openUrl('https://www.youtube.com/results?search_query=' + encodeURIComponent(picked.skill + ' mindset for young athletes'));
+}
+
+function pickSkill(s) {
+  picked.skill = s;
+  el('skillNote').textContent = skillTips[s];
+  chips('skillChips', Object.keys(skillTips), s, pickSkill);
+}
+
+function coachSpeak() { speak(skillTips[picked.skill]); }
+
+function goExplore() {
+  var q;
+  if (picked.find === 'Map') { openUrl('https://www.google.com/maps/search/' + encodeURIComponent(picked.city)); return; }
+  if (picked.find === 'Top places') q = 'best places to visit in ' + picked.city;
+  if (picked.find === 'Parks') q = 'best parks and outdoor places in ' + picked.city;
+  if (picked.find === 'Sports venues') q = 'sports venues and activities in ' + picked.city;
+  if (picked.find === 'Food') q = 'best food and restaurants in ' + picked.city;
+  el('exploreNote').textContent = 'Opening results for ' + picked.city + '...';
+  openUrl('https://www.google.com/search?q=' + encodeURIComponent(q));
+}
+
+function goNews() { openUrl('https://news.google.com/search?q=' + encodeURIComponent(picked.news)); }
+
+function logSession() {
+  S.sessions.unshift({ name: picked.exercise, min: picked.minute, feel: picked.feel, date: todayKey() });
+  S.xp += 15;
+  save();
+  renderTraining();
+  renderLevel();
+}
+
+function deleteSession(i) { S.sessions.splice(i, 1); save(); renderTraining(); }
+
+function renderTraining() {
+  var counts = {}, labels = [], i;
+  for (i = 6; i >= 0; i--) {
+    var d = new Date(); d.setDate(d.getDate() - i);
+    counts[dateKey(d)] = 0;
+    labels.push({ key: dateKey(d), name: d.toLocaleDateString(lang, { weekday: 'short' }) });
+  }
+  var total = 0;
+  S.sessions.forEach(function (s) { if (counts[s.date] !== undefined) { counts[s.date]++; total++; } });
+  el('weekCount').textContent = total;
+  var max = 1;
+  labels.forEach(function (l) { if (counts[l.key] > max) max = counts[l.key]; });
+  el('weekChart').innerHTML = labels.map(function (l) { return '<div><i style="height:' + (counts[l.key] / max * 110) + 'px"></i>' + l.name + '</div>'; }).join('');
+  el('sessionList').innerHTML = S.sessions.slice(0, 8).map(function (s, idx) {
+    return '<li><div>' + esc(s.name) + '<small>' + s.date + ' - ' + esc(s.min) + ' - ' + esc(s.feel) + '</small></div><button onclick="deleteSession(' + idx + ')">x</button></li>';
+  }).join('');
+}
+
+function addWater(n) {
+  var k = todayKey();
+  S.water[k] = Math.max(0, (S.water[k] || 0) + n);
+  if (n > 0) S.xp += 2;
+  save();
+  renderNutrition();
+}
+
+function addMeal() {
+  if (!picked.foods.length) return;
+  S.meals.unshift({ type: picked.mealType, text: picked.foods.join(', '), date: todayKey() });
+  S.xp += 10;
+  picked.foods = [];
+  multiChips('foodChips', foods, picked.foods);
+  save();
+  renderNutrition();
+  renderLevel();
+}
+
+function deleteMeal(i) { S.meals.splice(i, 1); save(); renderNutrition(); }
+
+function renderNutrition() {
+  el('waterCount').textContent = S.water[todayKey()] || 0;
+  el('mealList').innerHTML = S.meals.slice(0, 8).map(function (m, i) {
+    return '<li><div>' + esc(m.type) + '<small>' + m.date + ' - ' + esc(m.text) + '</small></div><button onclick="deleteMeal(' + i + ')">x</button></li>';
+  }).join('');
+}
+
+function addSleep() {
+  S.sleeps.unshift({ hours: parseFloat(picked.hour), feel: picked.sleepFeel, date: todayKey() });
+  S.xp += 10;
+  save();
+  renderSleep();
+  renderLevel();
+}
+
+function deleteSleep(i) { S.sleeps.splice(i, 1); save(); renderSleep(); }
+
+function renderSleep() {
+  var byDay = {}, labels = [], i;
+  for (i = 6; i >= 0; i--) {
+    var d = new Date(); d.setDate(d.getDate() - i);
+    byDay[dateKey(d)] = 0;
+    labels.push({ key: dateKey(d), name: d.toLocaleDateString(lang, { weekday: 'short' }) });
+  }
+  var total = 0, count = 0;
+  S.sleeps.forEach(function (s) { if (byDay[s.date] !== undefined) { byDay[s.date] = s.hours; total += s.hours; count++; } });
+  el('sleepAvg').textContent = count ? (total / count).toFixed(1) : 0;
+  el('sleepChart').innerHTML = labels.map(function (l) { return '<div><i style="height:' + (byDay[l.key] / 11 * 110) + 'px"></i>' + l.name + '</div>'; }).join('');
+  el('sleepList').innerHTML = S.sleeps.slice(0, 7).map(function (s, idx) {
+    return '<li><div>' + s.hours + ' hours<small>' + s.date + ' - ' + esc(s.feel) + '</small></div><button onclick="deleteSleep(' + idx + ')">x</button></li>';
+  }).join('');
+}
+
+function addReview() {
+  var good = el('revGood').value.trim(), better = el('revBetter').value.trim();
+  if (!good && !better) return;
+  S.reviews.unshift({ good: good, better: better, date: todayKey() });
+  S.xp += 15;
+  el('revGood').value = ''; el('revBetter').value = '';
+  save();
+  renderReviews();
+  renderLevel();
+}
+
+function deleteReview(i) { S.reviews.splice(i, 1); save(); renderReviews(); }
+
+function renderReviews() {
+  el('reviewList').innerHTML = S.reviews.slice(0, 8).map(function (r, i) {
+    return '<li><div>' + r.date + '<small>Went well: ' + esc(r.good) + '<br>Improve: ' + esc(r.better) + '</small></div><button onclick="deleteReview(' + i + ')">x</button></li>';
+  }).join('');
+}
+
+function addNote() {
+  var t = el('noteTitle').value.trim(), b = el('noteBody').value.trim();
+  if (!t && !b) return;
+  S.notes.unshift({ title: t || 'Untitled', body: b, date: todayKey() });
+  el('noteTitle').value = ''; el('noteBody').value = '';
+  save();
+  renderNotes();
+}
+
+function deleteNote(i) { S.notes.splice(i, 1); save(); renderNotes(); }
+
+function renderNotes() {
+  el('noteList').innerHTML = S.notes.slice(0, 12).map(function (n, i) {
+    return '<li><div><b>' + esc(n.title) + '</b><small>' + n.date + '<br>' + esc(n.body) + '</small></div><button onclick="deleteNote(' + i + ')">x</button></li>';
+  }).join('');
+}
+
+function fmt(s) { return pad(Math.floor(s / 60)) + ':' + pad(s % 60); }
+
+function startMatch() {
+  stopMatch();
+  matchStage = 1; matchSeconds = 1500;
+  el('half').textContent = words[lang].half1;
+  el('matchTime').textContent = fmt(matchSeconds);
+  matchTimer = setInterval(matchTick, 1000);
+}
+
+function stopMatch() { if (matchTimer) clearInterval(matchTimer); matchTimer = null; }
+
+function matchTick() {
+  matchSeconds--;
+  el('matchTime').textContent = fmt(Math.max(matchSeconds, 0));
+  if (matchSeconds > 0) return;
+  playTone(S.tone);
+  if (matchStage === 1) { matchStage = 2; matchSeconds = 300; el('half').textContent = words[lang].halfTime; speak(words[lang].halfTime + '. Take a break and drink some water.'); }
+  else if (matchStage === 2) { matchStage = 3; matchSeconds = 1500; el('half').textContent = words[lang].half2; speak(words[lang].half2 + '. Back to work.'); }
+  else { stopMatch(); el('half').textContent = words[lang].fullTime; speak(words[lang].fullTime + '. Well done.'); S.xp += 40; save(); renderLevel(); }
+}
+
+function saveTimes() { S.wake = el('wake').value; S.bed = el('sleepTime').value; save(); }
+
+function tick() {
+  var now = new Date();
+  var current = pad(now.getHours()) + ':' + pad(now.getMinutes());
+  el('clock').textContent = current;
+  if (current === S.wake && lastAlarm !== 'w' + current) { lastAlarm = 'w' + current; playTone(S.tone); speak(words[lang].wakeNow); }
+  if (current === S.bed && lastAlarm !== 's' + current) { lastAlarm = 's' + current; playTone(S.tone); speak(words[lang].bedNow); }
+  var parts = S.bed.split(':').map(Number);
+  var bedD = new Date(); bedD.setHours(parts[0], parts[1], 0, 0);
+  if (bedD < now) bedD.setDate(bedD.getDate() + 1);
+  var diff = Math.floor((bedD - now) / 60000);
+  el('countdown').textContent = words[lang].toSleep + ': ' + Math.floor(diff / 60) + 'h ' + (diff % 60) + 'm';
+}
+
+function initChips() {
+  chips('langChips', langNames, picked.langPick, function (l) { picked.langPick = l; });
+  pickCareer('');
+  el('careerNote').textContent = 'Tap a career to see what it takes.';
+  chips('sportChips', sports, picked.sport, function (s) { picked.sport = s; });
+  chips('kindChips', kinds, picked.kind, function (k) { picked.kind = k; });
+  chips('exChips', exercises, picked.exercise, function (x) { picked.exercise = x; });
+  chips('minChips', minutes, picked.minute, function (x) { picked.minute = x; });
+  chips('feelChips', feels, picked.feel, function (x) { picked.feel = x; });
+  chips('mealTypeChips', mealTypes, picked.mealType, function (x) { picked.mealType = x; });
+  multiChips('foodChips', foods, picked.foods);
+  chips('hourChips', hours, picked.hour, function (x) { picked.hour = x; });
+  chips('sleepFeelChips', feels, picked.sleepFeel, function (x) { picked.sleepFeel = x; });
+  chips('cityChips', cities, picked.city, function (x) { picked.city = x; });
+  chips('findChips', finds, picked.find, function (x) { picked.find = x; });
+  chips('newsChips', newsTopics, picked.news, function (x) { picked.news = x; });
+  pickSkill('Discipline');
+  renderTones();
+}
+
+setInterval(tick, 1000);
+
+(function startApp() {
+  renderAvatarPickers('avColors', 'avFaces', ['avPreview']);
+  renderPetChoices();
+  if (S.name) {
+    el('setup').style.display = 'none';
+    initApp();
+  } else {
+    el('setup').style.display = 'block';
+  }
+  tick();
+})();
+</script>
+</body>
+</html>
+<style>
+  body { font-weight: 800 !important; padding-bottom: 92px !important; }
+  h2 { font-weight: 900 !important; font-size: 34px !important; }
+  .sub, .muted, label, li small, .tile small { font-weight: 800 !important; }
+  .card h3 { font-weight: 900 !important; }
+  .tile b, .petInfo b { font-weight: 900 !important; }
+  button.main, button.alt, .chip { font-weight: 900 !important; }
+  button.main { border-radius: 16px !important; border-bottom: 5px solid #8f6b1f !important; padding: 18px 34px !important; }
+  button.main:active { transform: translateY(4px); border-bottom-width: 1px !important; }
+  button.alt { border-radius: 16px !important; border-bottom: 4px solid #0a0f18 !important; }
+  button.alt:active { transform: translateY(3px); border-bottom-width: 1px !important; }
+  .chip { border-radius: 14px !important; border-bottom: 4px solid #0a0f18 !important; }
+  .card, .tile { border-radius: 18px !important; }
+
+  header { padding: 14px 20px !important; }
+  .topRight { display: flex; align-items: center; gap: 12px; }
+  .badge { display: flex; align-items: center; gap: 8px; background: #1d2940; border: 2px solid #2f3d56; border-radius: 30px; padding: 6px 14px 6px 6px; cursor: pointer; }
+  .badge:active { transform: scale(0.96); }
+  .badge .petPic { width: 40px; height: 40px; border-radius: 50%; background: #0f1520; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .badge .petPic svg { width: 34px; height: 34px; }
+  .badge .bnum { font-size: 20px; font-weight: 900; color: #f0c15a; }
+  .badge .bxp { font-size: 12px; font-weight: 900; color: #8a97ad; letter-spacing: 1px; }
+
+  .slides { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 20px; padding: 6px 2px 14px 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .slides::-webkit-scrollbar { display: none; }
+  .slide { flex: 0 0 100%; scroll-snap-align: center; min-height: 360px; background: #172033; border: 2px solid #243044; border-radius: 22px; padding: 34px 30px; }
+  .slide h3 { margin: 0 0 8px 0; font-size: 24px; font-weight: 900; color: #eef1f6; letter-spacing: 0.5px; }
+  .slide .sdesc { color: #8a97ad; font-size: 14px; font-weight: 800; margin-bottom: 26px; }
+  .slideGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .big { background: #1d2940; border: 2px solid #2f3d56; border-bottom: 6px solid #0a0f18; border-radius: 18px; padding: 28px 16px; text-align: center; cursor: pointer; font-size: 16px; font-weight: 900; color: #eef1f6; }
+  .big:active { transform: translateY(4px); border-bottom-width: 2px; }
+  .big small { display: block; margin-top: 6px; color: #8a97ad; font-size: 12px; font-weight: 800; }
+  .big.gold { background: #d4a64a; color: #0f1520; border-color: #d4a64a; border-bottom-color: #8f6b1f; }
+  .big.gold small { color: #4a3a12; }
+  .dotsRow { display: flex; justify-content: center; gap: 12px; margin: 14px 0 34px 0; }
+  .dotsRow span { width: 12px; height: 12px; border-radius: 50%; background: #2f3d56; }
+  .dotsRow span.on { background: #d4a64a; width: 30px; border-radius: 8px; }
+
+  nav { padding: 6px 10px !important; justify-content: space-around; }
+  nav button { font-weight: 900 !important; font-size: 13px !important; padding: 18px 14px 14px 14px !important; }
+
+  #streakSheet { position: fixed; left: 0; right: 0; bottom: 0; top: 0; z-index: 20; background: rgba(6, 9, 15, 0.82); display: none; align-items: flex-end; justify-content: center; }
+  #streakSheet.open { display: flex; }
+  #streakSheet .sheet { width: 100%; max-width: 560px; background: #172033; border-top: 3px solid #d4a64a; border-radius: 28px 28px 0 0; padding: 40px 34px 50px 34px; max-height: 88vh; overflow-y: auto; animation: up 0.3s ease; }
+  @keyframes up { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  #streakSheet .closeX { float: right; background: none; border: none; color: #8a97ad; font-size: 30px; cursor: pointer; font-weight: 900; }
+  .bigPet { width: 160px; height: 160px; margin: 0 auto 20px auto; background: #0f1520; border-radius: 50%; border: 4px solid #d4a64a; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(212, 166, 74, 0.35); }
+  .bigPet svg { width: 130px; height: 130px; }
+  .sheetNum { text-align: center; font-size: 80px; font-weight: 900; color: #f0c15a; line-height: 1.1; text-shadow: 0 0 26px rgba(240, 193, 90, 0.5); }
+  .sheetLbl { text-align: center; font-size: 13px; letter-spacing: 4px; color: #d4a64a; font-weight: 900; text-transform: uppercase; margin-bottom: 26px; }
+  .xpBar { height: 16px; background: #0f1520; border-radius: 10px; overflow: hidden; margin: 10px 0 8px 0; border: 2px solid #2f3d56; }
+  .xpBar div { height: 100%; background: linear-gradient(90deg, #d4a64a, #f0c15a); width: 0%; transition: width 0.6s ease; }
+
+  .petGallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0 28px 0; }
+  .petCard { background: #1d2940; border: 3px solid #2f3d56; border-radius: 18px; padding: 18px 8px 14px 8px; text-align: center; cursor: pointer; }
+  .petCard.on { border-color: #d4a64a; background: #2b2210; box-shadow: 0 0 22px rgba(212, 166, 74, 0.35); }
+  .petCard svg { width: 84px; height: 84px; }
+  .petCard b { display: block; margin-top: 8px; font-size: 14px; font-weight: 900; color: #eef1f6; }
+
+  .charStage { width: 190px; height: 230px; margin: 0 auto 24px auto; background: #0f1520; border: 3px solid #d4a64a; border-radius: 22px; display: flex; align-items: center; justify-content: center; }
+  .charStage svg { width: 170px; height: 210px; }
+
+  .confetti { position: fixed; top: -20px; width: 10px; height: 16px; z-index: 40; animation: fall 2.6s linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(540deg); opacity: 0.9; } }
+
+  .chest { text-align: center; padding: 10px 0; }
+  .chestBox { width: 120px; height: 90px; margin: 0 auto 18px auto; background: linear-gradient(180deg, #8f6b1f, #5e4713); border: 4px solid #d4a64a; border-radius: 12px; cursor: pointer; position: relative; }
+  .chestBox::after { content: ''; position: absolute; left: 50%; top: 40%; width: 18px; height: 22px; margin-left: -9px; background: #f0c15a; border-radius: 4px; }
+  .chestBox.shake { animation: shake 0.5s ease 2; }
+  @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+</style>
+<div id="streakSheet" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet">
+    <button class="closeX" onclick="closeSheet()">x</button>
+    <div class="bigPet" id="sheetPet"></div>
+    <div class="sheetNum" id="sheetNum">0</div>
+    <div class="sheetLbl">day streak</div>
+    <div class="days" id="sheetDays" style="display:flex;justify-content:center;gap:12px;margin-bottom:26px"></div>
+    <div style="text-align:center;font-size:18px;font-weight:900;color:#eef1f6" id="sheetPetName">Pet</div>
+    <div style="text-align:center;font-size:13px;color:#8a97ad;font-weight:800" id="sheetLevel">Level 1</div>
+    <div class="xpBar"><div id="sheetXpBar"></div></div>
+    <div style="text-align:center;font-size:12px;color:#8a97ad;font-weight:800" id="sheetXpText">0 XP</div>
+    <button class="main" onclick="checkIn();renderSheet()" id="sheetCheckIn" style="width:100%;margin:26px 0 0 0">Check in today</button>
+    <button class="alt" onclick="closeSheet();show('calendar')" style="width:100%;margin:14px 0 0 0">Open calendar</button>
+  </div>
+</div>
+
+<div id="setup3" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#0f1520;z-index:30;padding:50px 24px;overflow-y:auto">
+  <div style="background:#172033;border:2px solid #243044;border-radius:22px;max-width:480px;margin:0 auto;padding:44px 32px;text-align:center">
+    <h1 style="font-size:30px;font-weight:900;margin:0 0 6px 0;color:#eef1f6;letter-spacing:2px;text-transform:uppercase">Apex World</h1>
+    <div class="dots" id="s3dots" style="display:flex;justify-content:center;gap:12px;margin:22px 0 30px 0"><span class="on"></span><span></span><span></span><span></span></div>
+
+    <div class="s3step" id="s3a">
+      <p style="color:#8a97ad;font-weight:800">Welcome. What is your name?</p>
+      <input type="text" id="s3name" placeholder="Your name" style="text-align:center">
+      <p style="color:#8a97ad;font-weight:800">How old are you?</p>
+      <input type="number" id="s3age" placeholder="Your age" style="text-align:center">
+      <button class="main" onclick="s3next(2)" style="width:100%;margin:0">Next</button>
+    </div>
+
+    <div class="s3step" id="s3b" style="display:none">
+      <p style="color:#8a97ad;font-weight:800">Pick your streak pet. It lives in the top corner and grows with you.</p>
+      <div class="petGallery" id="s3gallery"></div>
+      <label>Name your pet</label>
+      <input type="text" id="s3petName" placeholder="Pet name" style="text-align:center">
+      <button class="main" onclick="s3next(3)" style="width:100%;margin:0">Next</button>
+    </div>
+
+    <div class="s3step" id="s3c" style="display:none">
+      <p style="color:#8a97ad;font-weight:800">Build your character. Tap to customise everything.</p>
+      <div class="charStage" id="s3char"></div>
+      <div id="s3charControls"></div>
+      <button class="main" onclick="s3next(4)" style="width:100%;margin:20px 0 0 0">Next</button>
+    </div>
+
+    <div class="s3step" id="s3d" style="display:none">
+      <p style="color:#8a97ad;font-weight:800">Optional: one big goal for this year. You can skip it.</p>
+      <input type="text" id="s3goal" placeholder="Write your goal" style="text-align:center">
+      <button class="main" onclick="s3finish()" style="width:100%;margin:0">Start</button>
+    </div>
+  </div>
+</div>
+
+<div id="homeSlides" style="display:none">
+  <div class="slides" id="slideTrack" onscroll="updateDots()">
+
+    <div class="slide">
+      <h3>Today</h3>
+      <div class="sdesc" id="slideGreet">Welcome back</div>
+      <div class="slideGrid">
+        <div class="big gold" onclick="checkIn()" id="slideCheck">Check in<small>Keep your streak</small></div>
+        <div class="big" onclick="show('habits')">Habits<small>Tap to tick</small></div>
+        <div class="big" onclick="show('calendar')">Calendar<small>Your days</small></div>
+        <div class="big" onclick="openChest()">Surprise chest<small id="chestSmall">Open once a day</small></div>
+      </div>
+      <div class="note" id="slideChallenge" style="margin-top:28px"></div>
+    </div>
+
+    <div class="slide">
+      <h3>Learn</h3>
+      <div class="sdesc">Grow your mind</div>
+      <div class="slideGrid">
+        <div class="big" onclick="show('languages')">Languages<small>Quiz with music</small></div>
+        <div class="big" onclick="show('careers')">Careers<small>Tap a job, watch</small></div>
+        <div class="big" onclick="show('skills')">Skills<small>Mindset tips</small></div>
+        <div class="big" onclick="show('planner')">Study planner<small>Plan your week</small></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h3>Body</h3>
+      <div class="sdesc">Look after yourself</div>
+      <div class="slideGrid">
+        <div class="big" onclick="show('training')">Training<small>Tap and log</small></div>
+        <div class="big" onclick="show('nutrition')">Nutrition<small>Tap your meals</small></div>
+        <div class="big" onclick="show('sleep')">Sleep<small>Tap your hours</small></div>
+        <div class="big" onclick="show('videos')">Sport videos<small>Tap a sport</small></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h3>World</h3>
+      <div class="sdesc">See what is out there</div>
+      <div class="slideGrid">
+        <div class="big" onclick="show('explore')">Explore<small>Tap a city</small></div>
+        <div class="big" onclick="show('news')">News<small>Tap a topic</small></div>
+        <div class="big" onclick="show('match')">Focus and timers<small>Pick a ringtone</small></div>
+        <div class="big" onclick="show('goals')">Goals<small>Write your own</small></div>
+      </div>
+    </div>
+
+    <div class="slide">
+      <h3>You</h3>
+      <div class="sdesc">Your space</div>
+      <div class="slideGrid">
+        <div class="big" onclick="show('profile')">Profile<small>Your character</small></div>
+        <div class="big" onclick="show('review')">Daily review<small>Reflect</small></div>
+        <div class="big" onclick="show('notes')">Notes<small>Save anything</small></div>
+        <div class="big" onclick="openSheet()">My streak<small>See your pet</small></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="dotsRow" id="slideDots"></div>
+</div>
+
+<div id="planner" class="screen">
+  <h2>Study planner</h2>
+  <p class="sub">Tap a subject and a time, then add it to your week.</p>
+  <div class="card">
+    <h3>Add a study block</h3>
+    <label>Subject</label>
+    <div id="planSubjects"></div>
+    <label>Day</label>
+    <div id="planDays"></div>
+    <label>How long</label>
+    <div id="planMins"></div>
+    <button class="main" onclick="addPlan()">Add to my week</button>
+    <ul id="planList"></ul>
+  </div>
+</div>
+<div id="shop" class="screen">
+  <h2>XP Shop</h2>
+  <p class="sub">Spend the XP you earn. No real money, ever.</p>
+  <div class="card">
+    <h3>Your XP</h3>
+    <div class="stat" id="shopXp">0</div>
+    <div class="muted">available to spend</div>
+  </div>
+  <div class="card">
+    <h3>Items</h3>
+    <div id="shopGrid" class="petGallery"></div>
+    <div class="note" id="shopMsg">Tap an item to buy it.</div>
+  </div>
+</div>
+
+<button id="guideBtn" onclick="guideSpeak()" style="position:fixed;right:18px;bottom:104px;z-index:15;width:58px;height:58px;border-radius:50%;background:#d4a64a;color:#0f1520;border:none;border-bottom:5px solid #8f6b1f;font-size:26px;font-weight:900;cursor:pointer">?</button>
+<div id="guideBubble" style="display:none;position:fixed;right:18px;bottom:176px;left:18px;max-width:420px;margin-left:auto;z-index:16;background:#172033;border:2px solid #d4a64a;border-radius:18px;padding:20px 22px;color:#eef1f6;font-weight:800;line-height:1.7;box-shadow:0 10px 40px rgba(0,0,0,0.5)"></div>
+
+<script>
+var petArt = {
+  wolf: '<svg viewBox="0 0 100 100"><polygon points="18,10 38,32 14,40" fill="#8a97ad"/><polygon points="82,10 62,32 86,40" fill="#8a97ad"/><ellipse cx="50" cy="56" rx="34" ry="32" fill="#a9b4c4"/><ellipse cx="50" cy="68" rx="18" ry="14" fill="#dfe5ee"/><circle cx="38" cy="50" r="5" fill="#0f1520"/><circle cx="62" cy="50" r="5" fill="#0f1520"/><ellipse cx="50" cy="64" rx="6" ry="4" fill="#0f1520"/></svg>',
+  lion: '<svg viewBox="0 0 100 100"><circle cx="50" cy="52" r="44" fill="#b5651d"/><circle cx="50" cy="54" r="30" fill="#e0a84a"/><circle cx="39" cy="48" r="4.5" fill="#0f1520"/><circle cx="61" cy="48" r="4.5" fill="#0f1520"/><ellipse cx="50" cy="62" rx="7" ry="5" fill="#5a3410"/><path d="M50 67 L50 74 M42 76 Q50 80 58 76" stroke="#5a3410" stroke-width="3" fill="none"/></svg>',
+  falcon: '<svg viewBox="0 0 100 100"><path d="M50 8 Q80 18 84 52 Q82 84 50 92 Q18 84 16 52 Q20 18 50 8Z" fill="#5b7aa8"/><path d="M50 36 Q74 40 76 56 Q60 62 50 60 Q40 62 24 56 Q26 40 50 36Z" fill="#dfe5ee"/><circle cx="38" cy="46" r="5" fill="#f0c15a"/><circle cx="62" cy="46" r="5" fill="#f0c15a"/><circle cx="38" cy="46" r="2.2" fill="#0f1520"/><circle cx="62" cy="46" r="2.2" fill="#0f1520"/><polygon points="50,52 42,66 58,66" fill="#d4a64a"/></svg>',
+  tiger: '<svg viewBox="0 0 100 100"><circle cx="22" cy="22" r="12" fill="#d98324"/><circle cx="78" cy="22" r="12" fill="#d98324"/><ellipse cx="50" cy="56" rx="38" ry="34" fill="#e8943a"/><path d="M28 30 L36 44 M72 30 L64 44 M16 54 L30 56 M84 54 L70 56" stroke="#2a1608" stroke-width="5" stroke-linecap="round"/><ellipse cx="50" cy="68" rx="16" ry="12" fill="#f5dcb8"/><circle cx="38" cy="50" r="4.5" fill="#0f1520"/><circle cx="62" cy="50" r="4.5" fill="#0f1520"/><ellipse cx="50" cy="62" rx="6" ry="4" fill="#2a1608"/></svg>',
+  shark: '<svg viewBox="0 0 100 100"><path d="M50 6 L64 38 Q90 48 90 66 Q70 80 50 78 Q30 80 10 66 Q10 48 36 38 Z" fill="#5b7aa8"/><path d="M18 70 Q50 92 82 70 Q50 82 18 70Z" fill="#dfe5ee"/><circle cx="36" cy="58" r="4.5" fill="#0f1520"/><circle cx="64" cy="58" r="4.5" fill="#0f1520"/><path d="M30 72 L35 78 L40 72 L45 78 L50 72 L55 78 L60 72 L65 78 L70 72" stroke="#fff" stroke-width="2.5" fill="none"/></svg>',
+  panther: '<svg viewBox="0 0 100 100"><polygon points="16,14 38,34 14,44" fill="#1d2433"/><polygon points="84,14 62,34 86,44" fill="#1d2433"/><ellipse cx="50" cy="58" rx="36" ry="32" fill="#2a3346"/><ellipse cx="38" cy="52" rx="7" ry="6" fill="#d4a64a"/><ellipse cx="62" cy="52" rx="7" ry="6" fill="#d4a64a"/><ellipse cx="38" cy="52" rx="2" ry="5" fill="#0f1520"/><ellipse cx="62" cy="52" rx="2" ry="5" fill="#0f1520"/><ellipse cx="50" cy="67" rx="7" ry="5" fill="#8e6fa8"/></svg>',
+  dragon: '<svg viewBox="0 0 100 100"><polygon points="20,6 34,30 12,34" fill="#b8472f"/><polygon points="80,6 66,30 88,34" fill="#b8472f"/><ellipse cx="50" cy="56" rx="34" ry="32" fill="#3f8f6a"/><ellipse cx="50" cy="72" rx="20" ry="14" fill="#6cc29a"/><circle cx="37" cy="48" r="6" fill="#f0c15a"/><circle cx="63" cy="48" r="6" fill="#f0c15a"/><ellipse cx="37" cy="48" rx="2" ry="5" fill="#0f1520"/><ellipse cx="63" cy="48" rx="2" ry="5" fill="#0f1520"/><circle cx="44" cy="72" r="3" fill="#0f1520"/><circle cx="56" cy="72" r="3" fill="#0f1520"/></svg>',
+  robot: '<svg viewBox="0 0 100 100"><line x1="50" y1="4" x2="50" y2="18" stroke="#8a97ad" stroke-width="4"/><circle cx="50" cy="6" r="5" fill="#d4a64a"/><rect x="16" y="18" width="68" height="66" rx="14" fill="#7a8a99"/><rect x="26" y="34" width="48" height="26" rx="8" fill="#0f1520"/><circle cx="39" cy="47" r="7" fill="#3f8fa0"/><circle cx="61" cy="47" r="7" fill="#3f8fa0"/><rect x="34" y="68" width="32" height="6" rx="3" fill="#0f1520"/></svg>',
+  fox: '<svg viewBox="0 0 100 100"><polygon points="14,8 38,34 12,44" fill="#d9692a"/><polygon points="86,8 62,34 88,44" fill="#d9692a"/><path d="M50 20 Q86 30 88 56 Q70 88 50 90 Q30 88 12 56 Q14 30 50 20Z" fill="#e8803a"/><path d="M50 62 Q74 60 82 56 Q66 88 50 90 Q34 88 18 56 Q26 60 50 62Z" fill="#f7e6cf"/><circle cx="37" cy="50" r="4.5" fill="#0f1520"/><circle cx="63" cy="50" r="4.5" fill="#0f1520"/><circle cx="50" cy="72" r="5" fill="#0f1520"/></svg>'
+};
+
+var petList = [
+  { id: 'wolf', name: 'Wolf', stages: ['Pup', 'Young wolf', 'Wolf', 'Alpha'] },
+  { id: 'lion', name: 'Lion', stages: ['Cub', 'Young lion', 'Lion', 'King'] },
+  { id: 'falcon', name: 'Falcon', stages: ['Chick', 'Young falcon', 'Falcon', 'Sky master'] },
+  { id: 'tiger', name: 'Tiger', stages: ['Cub', 'Young tiger', 'Tiger', 'Apex predator'] },
+  { id: 'shark', name: 'Shark', stages: ['Pup', 'Young shark', 'Shark', 'Ocean king'] },
+  { id: 'panther', name: 'Panther', stages: ['Cub', 'Young panther', 'Panther', 'Shadow'] },
+  { id: 'dragon', name: 'Dragon', stages: ['Hatchling', 'Young dragon', 'Dragon', 'Elder'] },
+  { id: 'robot', name: 'Robot', stages: ['Spark', 'Bot', 'Mech', 'Titan'] },
+  { id: 'fox', name: 'Fox', stages: ['Kit', 'Young fox', 'Fox', 'Trickster'] }
+];
+
+var shopItems = [
+  { id: 'hair_long', name: 'Long hair', cost: 80, kind: 'hair' },
+  { id: 'hair_spiky', name: 'Spiky hair', cost: 80, kind: 'hair' },
+  { id: 'hair_curly', name: 'Curly hair', cost: 100, kind: 'hair' },
+  { id: 'out_hoodie', name: 'Hoodie', cost: 120, kind: 'outfit' },
+  { id: 'out_suit', name: 'Suit', cost: 200, kind: 'outfit' },
+  { id: 'out_jersey', name: 'Sports jersey', cost: 150, kind: 'outfit' },
+  { id: 'freeze', name: 'Streak freeze', cost: 150, kind: 'freeze' },
+  { id: 'pet_dragon', name: 'Unlock Dragon', cost: 300, kind: 'pet', pet: 'dragon' },
+  { id: 'pet_panther', name: 'Unlock Panther', cost: 250, kind: 'pet', pet: 'panther' },
+  { id: 'tone_gold', name: 'Gold ringtone', cost: 60, kind: 'tone' }
+];
+
+var skinTones = ['#f1c9a5', '#e0a97c', '#c68a5b', '#9a6540', '#6e4528', '#3f2a1a'];
+var hairColors = ['#1b1b1f', '#4a2e1b', '#8a5a2b', '#d4a64a', '#b5651d', '#7a8a99', '#8e6fa8'];
+var outfitColors = ['#5b7aa8', '#2a3f63', '#8e6fa8', '#3f8fa0', '#b5654a', '#2a2f37', '#d4a64a'];
+var hairStyles = ['Short', 'Long', 'Spiky', 'Curly', 'Bald'];
+var outfitStyles = ['Tee', 'Hoodie', 'Suit', 'Jersey'];
+
+var guideTips = {
+  home: 'Swipe left and right to see the slides. Tap the pet at the top to see your streak.',
+  calendar: 'Gold days are days you checked in. Tap a day to add a note.',
+  habits: 'Tap a habit to tick it for today. Every tick earns XP.',
+  languages: 'Pick a language, tap Start quiz, and tap the right answer. Turn the music on if you like.',
+  careers: 'Tap a job to read what it takes, then tap Watch videos about this job.',
+  videos: 'Pick a sport and a kind of video, then tap Watch.',
+  training: 'Tap the exercise, how long, and how it felt. Then save.',
+  nutrition: 'Tap your meal type and the foods you had, then save.',
+  sleep: 'Tap how many hours you slept and how you felt.',
+  skills: 'Tap a skill to read the tip, then watch videos about it.',
+  explore: 'Tap a city, tap what to find, then tap Go.',
+  news: 'Tap a topic, then tap Read news.',
+  goals: 'Here you write your own goals. Tap a goal when you finish it.',
+  review: 'Write what went well today and what you will improve.',
+  notes: 'Write anything you want to remember.',
+  match: 'Start the focus clock, and choose the ringtone that plays when time is up.',
+  profile: 'Change your character and your details here.',
+  planner: 'Tap a subject, a day and a length of time, then add it to your week.',
+  shop: 'Spend your XP on hair, outfits, pets and streak freezes. Tap an item to buy it.'
+};
+  var S3 = {};
+try { S3 = JSON.parse(localStorage.getItem('apex_v3') || '{}'); } catch (e) { S3 = {}; }
+S3.skin = S3.skin || skinTones[1];
+S3.hairStyle = S3.hairStyle || 'Short';
+S3.hairColor = S3.hairColor || hairColors[1];
+S3.outStyle = S3.outStyle || 'Tee';
+S3.outColor = S3.outColor || outfitColors[0];
+S3.owned = S3.owned || ['hair_short'];
+S3.freezes = S3.freezes || 0;
+S3.plan = S3.plan || [];
+S3.chestDay = S3.chestDay || '';
+S3.guideSeen = S3.guideSeen || {};
+S3.setupDone = S3.setupDone || false;
+S3.pet = S3.pet || '';
+S3.petName = S3.petName || '';
+
+function save3() { localStorage.setItem('apex_v3', JSON.stringify(S3)); }
+function getPet(id) { for (var i = 0; i < petList.length; i++) { if (petList[i].id === id) return petList[i]; } return petList[0]; }
+
+function charSvg() {
+  var hair = '';
+  if (S3.hairStyle === 'Short') hair = '<path d="M60 58 Q60 24 100 24 Q140 24 140 58 Q120 44 100 46 Q80 44 60 58Z" fill="' + S3.hairColor + '"/>';
+  if (S3.hairStyle === 'Long') hair = '<path d="M56 62 Q52 20 100 20 Q148 20 144 62 L148 112 L130 112 L130 60 Q100 46 70 60 L70 112 L52 112Z" fill="' + S3.hairColor + '"/>';
+  if (S3.hairStyle === 'Spiky') hair = '<polygon points="58,58 66,20 80,44 92,12 104,42 118,12 126,44 140,22 144,58 120,46 80,46" fill="' + S3.hairColor + '"/>';
+  if (S3.hairStyle === 'Curly') hair = '<circle cx="68" cy="44" r="16" fill="' + S3.hairColor + '"/><circle cx="90" cy="32" r="16" fill="' + S3.hairColor + '"/><circle cx="114" cy="32" r="16" fill="' + S3.hairColor + '"/><circle cx="134" cy="46" r="16" fill="' + S3.hairColor + '"/>';
+  var outfit = '<rect x="54" y="112" width="92" height="88" rx="22" fill="' + S3.outColor + '"/>';
+  if (S3.outStyle === 'Hoodie') outfit += '<path d="M72 112 Q100 140 128 112" stroke="#0f1520" stroke-width="5" fill="none"/><rect x="84" y="150" width="32" height="22" rx="6" fill="rgba(0,0,0,0.18)"/>';
+  if (S3.outStyle === 'Suit') outfit += '<polygon points="100,112 84,118 100,160 116,118" fill="#eef1f6"/><polygon points="100,122 94,134 100,176 106,134" fill="#b5654a"/>';
+  if (S3.outStyle === 'Jersey') outfit += '<text x="100" y="170" text-anchor="middle" font-size="34" font-weight="900" fill="#eef1f6" font-family="Arial">10</text>';
+  return '<svg viewBox="0 0 200 210">' + outfit + '<rect x="88" y="98" width="24" height="18" rx="6" fill="' + S3.skin + '"/><circle cx="100" cy="72" r="36" fill="' + S3.skin + '"/>' + hair + '<circle cx="86" cy="74" r="4" fill="#0f1520"/><circle cx="114" cy="74" r="4" fill="#0f1520"/><path d="M88 90 Q100 100 112 90" stroke="#0f1520" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>';
+}
+
+function hasItem(id) { return S3.owned.indexOf(id) > -1; }
+
+function availableHair() { return hairStyles.filter(function (h) { return h === 'Short' || h === 'Bald' || hasItem('hair_' + h.toLowerCase()); }); }
+function availableOutfits() { return outfitStyles.filter(function (o) { return o === 'Tee' || hasItem('out_' + o.toLowerCase()); }); }
+
+function swatchRow(boxId, colors, key, onChange) {
+  var box = el(boxId);
+  box.innerHTML = '';
+  colors.forEach(function (c) {
+    var s = document.createElement('span');
+    s.className = 'swatch' + (S3[key] === c ? ' on' : '');
+    s.style.background = c;
+    s.onclick = function () { S3[key] = c; save3(); onChange(); };
+    box.appendChild(s);
+  });
+}
+
+function renderCharControls(containerId, stageId, refresh) {
+  var box = el(containerId);
+  box.innerHTML = '<label>Skin</label><div id="' + containerId + '_skin"></div><label>Hair style</label><div id="' + containerId + '_hs"></div><label>Hair colour</label><div id="' + containerId + '_hc"></div><label>Outfit</label><div id="' + containerId + '_os"></div><label>Outfit colour</label><div id="' + containerId + '_oc"></div>';
+  function again() { renderCharControls(containerId, stageId, refresh); if (refresh) refresh(); }
+  swatchRow(containerId + '_skin', skinTones, 'skin', again);
+  swatchRow(containerId + '_hc', hairColors, 'hairColor', again);
+  swatchRow(containerId + '_oc', outfitColors, 'outColor', again);
+  chips(containerId + '_hs', availableHair(), S3.hairStyle, function (h) { S3.hairStyle = h; save3(); again(); });
+  chips(containerId + '_os', availableOutfits(), S3.outStyle, function (o) { S3.outStyle = o; save3(); again(); });
+  el(stageId).innerHTML = charSvg();
+}
+
+function renderGallery(boxId, current, onPick) {
+  var box = el(boxId);
+  box.innerHTML = '';
+  petList.forEach(function (p) {
+    var locked = (p.id === 'dragon' && !hasItem('pet_dragon')) || (p.id === 'panther' && !hasItem('pet_panther'));
+    var c = document.createElement('div');
+    c.className = 'petCard' + (current === p.id ? ' on' : '');
+    c.innerHTML = petArt[p.id] + '<b>' + p.name + (locked ? ' (locked)' : '') + '</b>';
+    if (locked) c.style.opacity = '0.45';
+    c.onclick = function () { if (locked) { alert('Unlock this pet in the XP shop.'); return; } onPick(p.id); renderGallery(boxId, p.id, onPick); };
+    box.appendChild(c);
+  });
+}
+
+function s3show(id) {
+  ['s3a', 's3b', 's3c', 's3d'].forEach(function (x) { el(x).style.display = x === id ? 'block' : 'none'; });
+  var order = ['s3a', 's3b', 's3c', 's3d'];
+  var dots = el('s3dots').getElementsByTagName('span');
+  for (var i = 0; i < dots.length; i++) dots[i].className = i === order.indexOf(id) ? 'on' : '';
+}
+
+function s3next(n) {
+  if (n === 2) {
+    if (!el('s3name').value.trim()) { alert('Please type your name.'); return; }
+    if (!el('s3age').value) { alert('Please type your age.'); return; }
+    s3show('s3b');
+  }
+  if (n === 3) {
+    if (!S3.pet) { alert('Please tap a pet to pick it.'); return; }
+    s3show('s3c');
+    renderCharControls('s3charControls', 's3char');
+  }
+  if (n === 4) s3show('s3d');
+}
+
+function petGreet() {
+  var p = getPet(S3.pet);
+  speak('Hi ' + (S.name || 'champion') + '. I am ' + (S3.petName || p.name) + '. Let us build your streak together.');
+}
+
+function s3finish() {
+  S.name = el('s3name').value.trim();
+  S.age = el('s3age').value;
+  S.profile = S.profile || {};
+  S.profile.name = S.name;
+  S.profile.age = S.age;
+  S.yearGoal = el('s3goal').value.trim();
+  S.pet = S3.pet;
+  S.petName = el('s3petName').value.trim() || getPet(S3.pet).name;
+  S3.petName = S.petName;
+  S3.setupDone = true;
+  S.xp += 50;
+  save(); save3();
+  el('setup3').style.display = 'none';
+  el('setup').style.display = 'none';
+  startV3();
+  confetti();
+  setTimeout(petGreet, 600);
+  setTimeout(function () { showBubble('Surprise! You earned 50 bonus XP for joining. Check your pet in the top corner.'); }, 4200);
+}
+
+function confetti() {
+  var cols = ['#d4a64a', '#f0c15a', '#5b7aa8', '#8e6fa8', '#3f8fa0'];
+  for (var i = 0; i < 40; i++) {
+    var c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = cols[i % cols.length];
+    c.style.animationDelay = (Math.random() * 0.8) + 's';
+    document.body.appendChild(c);
+    (function (n) { setTimeout(function () { if (n.parentNode) n.parentNode.removeChild(n); }, 3600); })(c);
+  }
+}
+
+function showBubble(text) {
+  var b = el('guideBubble');
+  b.textContent = text;
+  b.style.display = 'block';
+  clearTimeout(showBubble.t);
+  showBubble.t = setTimeout(function () { b.style.display = 'none'; }, 7000);
+}
+
+function guideSpeak() {
+  var tip = guideTips[currentScreen] || guideTips.home;
+  showBubble(tip);
+  speak(tip);
+}
+
+function firstTime(name) {
+  if (S3.guideSeen[name]) return;
+  S3.guideSeen[name] = true;
+  save3();
+  if (guideTips[name]) showBubble(guideTips[name]);
+}
+
+function renderBadge() {
+  var streak = calcStreak();
+  var p = getPet(S3.pet || S.pet || 'wolf');
+  var box = el('badgeBox');
+  if (!box) return;
+  box.innerHTML = '<div class="petPic">' + petArt[p.id] + '</div><div><div class="bnum">' + streak + '</div></div><div><div class="bxp">' + S.xp + ' XP</div></div>';
+}
+
+function stageIndex(streak) { return streak >= 30 ? 3 : streak >= 10 ? 2 : streak >= 3 ? 1 : 0; }
+
+function renderSheet() {
+  var streak = calcStreak();
+  var p = getPet(S3.pet || S.pet || 'wolf');
+  el('sheetPet').innerHTML = petArt[p.id];
+  el('sheetNum').textContent = streak;
+  el('sheetPetName').textContent = (S3.petName || S.petName || p.name) + ' the ' + p.stages[stageIndex(streak)];
+  var info = levelInfo();
+  el('sheetLevel').textContent = 'Level ' + info.num + ' ' + info.name;
+  el('sheetXpBar').style.width = info.pct + '%';
+  el('sheetXpText').textContent = S.xp + ' XP total';
+  var days = el('sheetDays');
+  days.innerHTML = '';
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(); d.setDate(d.getDate() - i);
+    var s = document.createElement('span');
+    s.style.cssText = 'width:20px;height:20px;border-radius:50%;background:' + (S.checkins[dateKey(d)] ? '#f0c15a' : '#2f3d56') + ';' + (S.checkins[dateKey(d)] ? 'box-shadow:0 0 12px rgba(240,193,90,0.8)' : '');
+    days.appendChild(s);
+  }
+  var btn = el('sheetCheckIn');
+  if (S.checkins[todayKey()]) { btn.textContent = 'Checked in today'; btn.disabled = true; btn.style.opacity = '0.6'; }
+  else { btn.textContent = 'Check in today'; btn.disabled = false; btn.style.opacity = '1'; }
+  renderBadge();
+}
+
+function openSheet() { renderSheet(); el('streakSheet').classList.add('open'); }
+function closeSheet() { el('streakSheet').classList.remove('open'); }
+
+function openChest() {
+  if (S3.chestDay === todayKey()) { showBubble('You already opened today\'s chest. Come back tomorrow.'); return; }
+  S3.chestDay = todayKey();
+  var prizes = [25, 40, 60, 80, 120];
+  var prize = prizes[Math.floor(Math.random() * prizes.length)];
+  S.xp += prize;
+  save(); save3();
+  confetti();
+  playTone('Rise');
+  showBubble('Surprise! The chest gave you ' + prize + ' XP.');
+  el('chestSmall').textContent = 'Opened today';
+  renderBadge();
+}
+
+function renderShop() {
+  el('shopXp').textContent = S.xp;
+  var grid = el('shopGrid');
+  grid.innerHTML = '';
+  shopItems.forEach(function (it) {
+    var owned = it.kind === 'freeze' ? false : hasItem(it.id);
+    var c = document.createElement('div');
+    c.className = 'petCard' + (owned ? ' on' : '');
+    var label = it.kind === 'pet' ? petArt[it.pet] : '<div style="height:84px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#d4a64a;letter-spacing:1px;text-transform:uppercase">' + it.kind + '</div>';
+    c.innerHTML = label + '<b>' + it.name + '</b><div style="color:#f0c15a;font-weight:900;margin-top:6px">' + (owned ? 'Owned' : it.cost + ' XP') + '</div>' + (it.kind === 'freeze' ? '<div style="font-size:12px;color:#8a97ad">You have ' + S3.freezes + '</div>' : '');
+    c.onclick = function () { buyItem(it); };
+    grid.appendChild(c);
+  });
+}
+
+function buyItem(it) {
+  if (it.kind !== 'freeze' && hasItem(it.id)) { el('shopMsg').textContent = 'You already own ' + it.name + '.'; return; }
+  if (S.xp < it.cost) { el('shopMsg').textContent = 'Not enough XP for ' + it.name + '. You need ' + (it.cost - S.xp) + ' more.'; return; }
+  S.xp -= it.cost;
+  if (it.kind === 'freeze') { S3.freezes++; } else { S3.owned.push(it.id); }
+  if (it.kind === 'tone') { if (tones.indexOf('Gold') < 0) { tones.push('Gold'); toneDefs.Gold = [[880, 0.2], [1320, 0.2], [1760, 0.4]]; } }
+  save(); save3();
+  el('shopMsg').textContent = 'Bought ' + it.name + '.';
+  confetti();
+  renderShop();
+  renderBadge();
+}
+
+function renderPlanner() {
+  var subjects = ['Maths', 'Science', 'English', 'History', 'Languages', 'Computing', 'Revision'];
+  var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  var mins = ['20 min', '30 min', '45 min', '60 min', '90 min'];
+  window.planPick = window.planPick || { s: 'Maths', d: 'Mon', m: '30 min' };
+  chips('planSubjects', subjects, planPick.s, function (x) { planPick.s = x; });
+  chips('planDays', days, planPick.d, function (x) { planPick.d = x; });
+  chips('planMins', mins, planPick.m, function (x) { planPick.m = x; });
+  el('planList').innerHTML = S3.plan.map(function (p, i) {
+    return '<li><div>' + esc(p.s) + '<small>' + esc(p.d) + ' - ' + esc(p.m) + '</small></div><button onclick="removePlan(' + i + ')">x</button></li>';
+  }).join('');
+}
+
+function addPlan() {
+  S3.plan.push({ s: planPick.s, d: planPick.d, m: planPick.m });
+  S.xp += 5;
+  save(); save3();
+  renderPlanner();
+  renderBadge();
+}
+
+function removePlan(i) { S3.plan.splice(i, 1); save3(); renderPlanner(); }
+
+function updateDots() {
+  var t = el('slideTrack');
+  var n = t.children.length;
+  var idx = Math.round(t.scrollLeft / t.clientWidth);
+  var dots = el('slideDots').getElementsByTagName('span');
+  for (var i = 0; i < dots.length; i++) dots[i].className = i === idx ? 'on' : '';
+}
+
+function startV3() {
+  var header = document.querySelector('header');
+  var sel = header.querySelector('select');
+  var right = document.createElement('div');
+  right.className = 'topRight';
+  var badge = document.createElement('div');
+  badge.className = 'badge';
+  badge.id = 'badgeBox';
+  badge.onclick = openSheet;
+  right.appendChild(badge);
+  right.appendChild(sel);
+  header.appendChild(right);
+
+  var home = el('home');
+  var kids = Array.prototype.slice.call(home.children);
+  kids.forEach(function (k) { k.style.display = 'none'; });
+  var slides = el('homeSlides');
+  slides.style.display = 'block';
+  home.appendChild(slides);
+  var dots = el('slideDots');
+  dots.innerHTML = '';
+  for (var i = 0; i < el('slideTrack').children.length; i++) dots.appendChild(document.createElement('span'));
+  updateDots();
+
+  navItems.length = 0;
+  [['home', 'Home'], ['habits', 'Habits'], ['languages', 'Languages'], ['shop', 'Shop'], ['profile', 'Profile']].forEach(function (x) { navItems.push(x); });
+  buildNav();
+
+  var oldShow = show;
+  window.show = function (name) {
+    var all = document.querySelectorAll('.screen');
+    for (var j = 0; j < all.length; j++) all[j].classList.remove('active');
+    var target = el(name);
+    if (target) target.classList.add('active');
+    navItems.forEach(function (it) { var b = el('nav_' + it[0]); if (b) b.classList.toggle('on', it[0] === name); });
+    currentScreen = name;
+    window.scrollTo(0, 0);
+    if (name === 'shop') renderShop();
+    if (name === 'planner') renderPlanner();
+    if (name === 'profile') { renderCharControls('profCharControls', 'profChar', function () { renderBadge(); }); }
+    firstTime(name);
+  };
+  show = window.show;
+
+  var prof = el('profile');
+  var card = prof.querySelector('.card');
+  var extra = document.createElement('div');
+  extra.className = 'card';
+  extra.innerHTML = '<h3>Your character</h3><div class="charStage" id="profChar"></div><div id="profCharControls"></div><h3 style="margin-top:30px">Your pet</h3><div class="petGallery" id="profGallery"></div>';
+  prof.insertBefore(extra, card);
+  renderGallery('profGallery', S3.pet, function (id) { S3.pet = id; S.pet = id; save(); save3(); renderBadge(); });
+  renderCharControls('profCharControls', 'profChar', function () { renderBadge(); });
+
+  renderBadge();
+  el('slideGreet').textContent = 'Welcome back, ' + (S.name || 'champion');
+  el('slideChallenge').textContent = 'Daily challenge: ' + challenges[new Date().getDate() % challenges.length];
+  if (S.checkins[todayKey()]) el('slideCheck').innerHTML = 'Checked in<small>See you tomorrow</small>';
+}
+
+var oldCheckIn = checkIn;
+checkIn = function () {
+  if (S.checkins[todayKey()]) { showBubble('You already checked in today.'); return; }
+  oldCheckIn();
+  var sc = el('slideCheck');
+  if (sc) sc.innerHTML = 'Checked in<small>See you tomorrow</small>';
+  confetti();
+  renderBadge();
+  var s = calcStreak();
+  if (milestoneDefs.indexOf(s) > -1) { showBubble('Milestone! ' + s + ' day streak.'); }
+};
+
+(function bootV3() {
+  var hasProfile = !!S.name;
+  if (!hasProfile && !S3.setupDone) {
+    el('setup').style.display = 'none';
+    el('setup3').style.display = 'block';
+    renderGallery('s3gallery', S3.pet, function (id) { S3.pet = id; save3(); });
+    s3show('s3a');
+  } else {
+    if (!S3.pet) { S3.pet = S.pet && petArt[S.pet] ? S.pet : 'wolf'; S3.petName = S.petName || getPet(S3.pet).name; save3(); }
+    el('setup').style.display = 'none';
+    el('setup3').style.display = 'none';
+    startV3();
+  }
+})();
+</script>
+</body>
+</html>
+<style>
+  body { background: #0b0c0e !important; color: #d4d7dc !important; }
+  header, nav { background: #060708 !important; border-color: #2a2d33 !important; }
+  header h1 { color: #e8e9ec !important; letter-spacing: 3px !important; }
+  h2 { color: #f0f1f3 !important; text-transform: uppercase; letter-spacing: 2px; }
+  .sub, .muted, label, li small, .tile small, .big small { color: #868b94 !important; }
+  .card, .tile, .slide, .big, .quote, .note, .chip, .petCard, #streakSheet .sheet, #setup .box { background: #15171b !important; border-color: #2a2d33 !important; border-radius: 4px !important; color: #d4d7dc !important; }
+  .card h3, .slide h3 { color: #c8323f !important; letter-spacing: 3px !important; }
+  .slide { border-radius: 4px !important; border-width: 1px !important; }
+  .big { border-bottom: 5px solid #000 !important; }
+  .big.gold, button.main { background: #c8323f !important; color: #ffffff !important; border-color: #c8323f !important; border-bottom: 5px solid #7a1c25 !important; border-radius: 4px !important; text-transform: uppercase; letter-spacing: 1.5px; }
+  .big.gold small { color: #ffd5d9 !important; }
+  button.alt, .chip { background: #1d2025 !important; color: #d4d7dc !important; border: 1px solid #33363d !important; border-bottom: 4px solid #000 !important; border-radius: 4px !important; }
+  button.alt.on, .chip.on { background: #c8323f !important; color: #ffffff !important; border-color: #c8323f !important; }
+  input[type=text], input[type=time], input[type=number], input[type=url], textarea { background: #0b0c0e !important; color: #ffffff !important; border: 1px solid #33363d !important; border-radius: 4px !important; }
+  input:focus, textarea:focus { border-color: #c8323f !important; }
+  .note { border-left: 4px solid #c8323f !important; }
+  .stat { color: #c8323f !important; }
+  .chart i { background: #c8323f !important; }
+  nav button { color: #868b94 !important; }
+  nav button.on { color: #c8323f !important; border-bottom-color: #c8323f !important; }
+  .dotsRow span.on { background: #c8323f !important; }
+  .dotsRow span { background: #33363d !important; }
+  .badge { background: #15171b !important; border: 1px solid #33363d !important; border-radius: 6px !important; }
+  .badge .bnum { color: #c8323f !important; }
+  .badge .bxp { color: #868b94 !important; }
+  #streakSheet .sheet { border-top: 3px solid #c8323f !important; border-radius: 6px 6px 0 0 !important; }
+  .sheetNum { color: #e8e9ec !important; text-shadow: 0 0 24px rgba(200, 50, 63, 0.55) !important; }
+  .sheetLbl { color: #c8323f !important; }
+  .xpBar { background: #0b0c0e !important; border-color: #33363d !important; }
+  .xpBar div { background: linear-gradient(90deg, #7a1c25, #c8323f) !important; }
+  .bigPet { border-color: #c8323f !important; box-shadow: 0 0 40px rgba(200, 50, 63, 0.35) !important; border-radius: 8px !important; background: #0b0c0e !important; }
+  .petCard.on { border-color: #c8323f !important; background: #2a1013 !important; box-shadow: 0 0 20px rgba(200, 50, 63, 0.3) !important; }
+  .quizStage { background: linear-gradient(135deg, #15171b, #2a1013, #1d2025, #15171b) !important; background-size: 400% 400% !important; border-radius: 4px !important; border-color: #33363d !important; }
+  .quizStage::before { background: #c8323f !important; }
+  .quizStage::after { background: #4a4f58 !important; }
+  .quizTop { color: #c8323f !important; }
+  #quizAnswers button { border-radius: 4px !important; }
+  #quizAnswers button.right { background: #c8323f !important; border-color: #c8323f !important; color: #fff !important; }
+  #guideBtn { background: #c8323f !important; color: #fff !important; border-bottom: 5px solid #7a1c25 !important; border-radius: 6px !important; }
+  #guideBubble { background: #15171b !important; border-color: #c8323f !important; border-radius: 4px !important; }
+  .logo i:nth-child(1) { background: #c8323f !important; } .logo i:nth-child(2) { background: #6b6f78 !important; } .logo i:nth-child(3) { background: #4a4f58 !important; } .logo i:nth-child(4) { background: #2a2d33 !important; }
+  .tile { border-top: 3px solid #c8323f !important; }
+  .confetti { background: #c8323f !important; }
+  li, .streakCard .days span { border-color: #2a2d33 !important; }
+  .rankBadge { display: inline-block; background: #0b0c0e; border: 2px solid #c8323f; color: #e8e9ec; padding: 6px 16px; border-radius: 4px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; font-size: 12px; margin: 8px 0 22px 0; }
+  .tutorCard { display: grid; grid-template-columns: 1fr; gap: 14px; }
+</style>
+<script>
+newLogo = function (size) {
+  return '<svg viewBox="0 0 100 100" width="' + size + '" height="' + size + '"><rect x="2" y="2" width="96" height="96" fill="#0e0f12" stroke="#6b6f78" stroke-width="4"/><polygon points="50,12 86,88 68,88 50,46 32,88 14,88" fill="#b8bcc4"/><polygon points="50,12 86,88 68,88 50,46" fill="#8a8f98"/><polygon points="24,66 76,56 78,66 26,76" fill="#c8323f"/></svg>';
+};
+applyLogo();
+</script>
+</body>
+</html>
+<style>
+#flameCorner{position:fixed;top:10px;right:12px;z-index:60;display:none;align-items:center;gap:4px;background:#15171b;border:2px solid #2a2d33;border-radius:20px;padding:4px 10px 4px 6px;cursor:pointer;font-weight:900;color:#c8323f;font-size:18px}
+#flameCorner svg{width:22px;height:22px}
+</style>
+<div id="flameCorner" onclick="openSheet()"><svg viewBox="0 0 100 100"><path d="M50 4 C58 28 84 40 84 66 C84 86 68 96 50 96 C32 96 16 86 16 66 C16 52 26 44 32 34 C34 46 42 48 44 42 C46 30 44 16 50 4Z" fill="#c8323f"/><path d="M50 46 C54 58 66 62 66 76 C66 86 58 92 50 92 C42 92 34 86 34 76 C34 64 46 60 50 46Z" fill="#f0f0f0"/></svg><span id="flameNum">0</span></div>
+<script>
+function isAdult() { return Number(S.age) >= 18; }
+
+function flameUpdate() {
+  var f = el('flameCorner');
+  var b = el('badgeBox');
+  if (!f) return;
+  if (isAdult() && S.name) {
+    f.style.display = 'flex';
+    el('flameNum').textContent = calcStreak();
+    if (b) b.style.display = 'none';
+  } else {
+    f.style.display = 'none';
+    if (b) b.style.display = '';
+  }
+}
+
+var oldRenderBadge = renderBadge;
+renderBadge = function () { oldRenderBadge(); flameUpdate(); };
+
+var oldRenderSheet = renderSheet;
+renderSheet = function () {
+  oldRenderSheet();
+  if (isAdult()) {
+    el('sheetPet').innerHTML = '<svg viewBox="0 0 100 100"><path d="M50 4 C58 28 84 40 84 66 C84 86 68 96 50 96 C32 96 16 86 16 66 C16 52 26 44 32 34 C34 46 42 48 44 42 C46 30 44 16 50 4Z" fill="#c8323f"/><path d="M50 46 C54 58 66 62 66 76 C66 86 58 92 50 92 C42 92 34 86 34 76 C34 64 46 60 50 46Z" fill="#f0f0f0"/></svg>';
+    el('sheetPetName').textContent = 'Rank: ' + rankFor(S.xp);
+  }
+};
+
+function hideGalleryIfAdult() {
+  var g = el('s3gallery');
+  if (!g) return;
+  var box = g.parentNode;
+  var age = document.querySelector('#setup3 input[type=number]');
+  var adult = age ? Number(age.value) >= 18 : isAdult();
+  box.style.display = adult ? 'none' : '';
+  if (adult) { S3.pet = 'shield'; }
+}
+
+var ageInput = document.querySelector('#setup3 input[type=number]');
+if (ageInput) {
+  ageInput.addEventListener('input', hideGalleryIfAdult);
+  ageInput.addEventListener('change', hideGalleryIfAdult);
+}
+hideGalleryIfAdult();
+flameUpdate();
+setInterval(flameUpdate, 1500);
+</script>
+</body>
+</html>
